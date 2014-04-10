@@ -1,0 +1,24 @@
+# Tags files
+types_c.taghl
+core
+tags
+warmup2
+# Object files
+*.o
+*.elf
+*.out
+*.c~
+# Libraries
+*.lib
+*.a
+*.swp
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
