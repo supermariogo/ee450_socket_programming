@@ -1,15 +1,15 @@
 #include "iostream"
-/*
- *#include "bidder.h"
- *#include "auctionserver.h"
- *#include "seller.h"
- */
+#include "bidder.h"
+#include "auctionserver.h"
+#include "seller.h"
 
-
+using std::cout;
+using std::cin;
+using std::endl;
 
 int main(int argc, const char *argv[])
 {	
-	using namespace std;
+	
 	cout<<"hello"<<endl;
 	return 0;
 }

@@ -1,17 +1,52 @@
-default: auctionserver.o bidder.o seller.o main.o 
-	g++ -o auction -g auctionserver.o bidder.o seller.o main.o
+default: server bidder seller 
+	mv bidder.out bidder1.out
+	cp bidder1.out bidder2.out
+	mv seller.out seller1.out
+	cp seller1.out seller2.out
+	@ echo "\n----------------*.txt--------------------\n"
+	@ ls *.txt
+	@ echo "\n----------------*.out--------------------\n"
+	@ ls *.out
+	@ echo "\n"
 
-auctionserver.o: auctionserver.h auctionserver.cpp
-	g++ -g -c -Wall auctionserver.cpp
+server: auctionserver.h auctionserver.cpp
+	g++ -o server.out -g -Wall auctionserver.cpp -lpthread
 
-bidder.o: bidder.cpp bidder.h
-	g++ -g -c -Wall bidder.cpp
+bidder: bidder.cpp bidder.h
+	g++ -o bidder.out -g -Wall bidder.cpp -lpthread 
 
-seller.o: seller.h seller.cpp
-	g++ -g -c -Wall seller.cpp
+seller: seller.h seller.cpp
+	g++ -o seller.out -g -Wall seller.cpp -lpthread 
 
 main.o:	main.h main.cpp
-	g++ -g -c -Wall main.cpp
+	g++ -g -c -Wall main.cpp -lpthread
+
+display: 
+	@ echo "\n----------------*.txt--------------------\n"
+	@ ls *.txt
+	@ echo "\n----------------*.out--------------------\n"
+	@ ls *.out
+	@ echo "\n"
 
 clean:
-	rm -f *.o *~ auction
+	rm -f *.o *~
+
+cat1:
+	cat Registration.txt
+	@echo "----------------------------------------------------"
+	@cat bidderPass1.txt
+	@cat bidderPass2.txt
+	@cat sellerPass1.txt
+	@cat sellerPass2.txt
+cat2:
+	cat broadcastList.txt
+	@echo "------------------------seller1 sell----------------------------"
+	cat itemList1.txt
+	@echo "------------------------seller2 sell----------------------------"
+	cat itemList2.txt
+	@echo "------------------------bidder1 bidding----------------------------"
+	cat bidding1.txt
+	@echo "------------------------bidder2 bidding----------------------------"
+	cat bidding2.txt
+	
+	
