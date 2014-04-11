@@ -1,4 +1,4 @@
-default: server bidder seller 
+nunki: server bidder seller 
 	mv bidder.out bidder1.out
 	cp bidder1.out bidder2.out
 	mv seller.out seller1.out
@@ -10,13 +10,34 @@ default: server bidder seller
 	@ echo "\n"
 
 server: auctionserver.h auctionserver.c
-	g++ -o server.out -g -Wall auctionserver.c -lpthread 
+	gcc -o server.out -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
 
 bidder: bidder.c bidder.h
-	g++ -o bidder.out -g -Wall bidder.c -lpthread
+	gcc -o bidder.out -g -Wall bidder.c -lpthread -lsocket -lnsl -lresolv
 
 seller: seller.h seller.c
-	g++ -o seller.out -g -Wall seller.c -lpthread
+	gcc -o seller.out -g -Wall seller.c -lpthread -lsocket -lnsl -lresolv
+
+ubuntu: server_u bidder_u seller_u 
+	mv bidder.out bidder1.out
+	cp bidder1.out bidder2.out
+	mv seller.out seller1.out
+	cp seller1.out seller2.out
+	@ echo "\n----------------*.txt--------------------\n"
+	@ ls *.txt
+	@ echo "\n----------------*.out--------------------\n"
+	@ ls *.out
+	@ echo "\n"
+
+server_u: auctionserver.h auctionserver.c
+	gcc -o server.out -g -Wall auctionserver.c -lpthread  
+
+bidder_u: bidder.c bidder.h
+	gcc -o bidder.out -g -Wall bidder.c -lpthread 
+
+seller_u: seller.h seller.c
+	gcc -o seller.out -g -Wall seller.c -lpthread 
+
 
 display: 
 	@ echo "\n----------------*.txt--------------------\n"
