@@ -10,13 +10,13 @@ default: server bidder seller
 	@ echo "\n"
 
 server: auctionserver.h auctionserver.c
-	gcc -o server.out -g -Wall auctionserver.c -lpthread 
+	g++ -o server.out -g -Wall auctionserver.c -lpthread 
 
 bidder: bidder.c bidder.h
-	gcc -o bidder.out -g -Wall bidder.c -lpthread
+	g++ -o bidder.out -g -Wall bidder.c -lpthread
 
 seller: seller.h seller.c
-	gcc -o seller.out -g -Wall seller.c -lpthread
+	g++ -o seller.out -g -Wall seller.c -lpthread
 
 display: 
 	@ echo "\n----------------*.txt--------------------\n"
