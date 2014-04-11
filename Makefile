@@ -10,13 +10,13 @@ default: server bidder seller
 	@ echo "\n"
 
 server: auctionserver.h auctionserver.cpp
-	g++ -o server.out -g -Wall auctionserver.cpp -lpthread
+	g++ -o server.out -g -Wall -L/opt/lib auctionserver.cpp -lpthread -lsocket -lnsl -lresolv
 
 bidder: bidder.cpp bidder.h
-	g++ -o bidder.out -g -Wall bidder.cpp -lpthread 
+	g++ -o bidder.out -g -Wall bidder.cpp -lpthread -lsocket -lnsl -lresolv 
 
 seller: seller.h seller.cpp
-	g++ -o seller.out -g -Wall seller.cpp -lpthread 
+	g++ -o seller.out -g -Wall seller.cpp -lpthread -lsocket -lnsl -lresolv 
 
 main.o:	main.h main.cpp
 	g++ -g -c -Wall main.cpp -lpthread
