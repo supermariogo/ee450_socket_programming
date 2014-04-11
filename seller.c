@@ -1,5 +1,3 @@
-#include "iostream"
-#include "auctionserver.h"
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <unistd.h> 
@@ -11,15 +9,14 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <sys/wait.h>
+#include <pthread.h>
 
-using std::cout;
-using std::cin;
-using std::endl;
+#include "seller.h"
 
 int main(int argc, const char *argv[])
 {	
 	
-	cout<<"hello"<<endl;
+	printf("hello \n");
 	return 0;
 }
 

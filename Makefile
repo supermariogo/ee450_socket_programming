@@ -9,17 +9,14 @@ default: server bidder seller
 	@ ls *.out
 	@ echo "\n"
 
-server: auctionserver.h auctionserver.cpp
-	g++ -o server.out -g -Wall -L/opt/lib auctionserver.cpp -lpthread -lsocket -lnsl -lresolv
+server: auctionserver.h auctionserver.c
+	gcc -o server.out -g -Wall auctionserver.c -lpthread 
 
-bidder: bidder.cpp bidder.h
-	g++ -o bidder.out -g -Wall bidder.cpp -lpthread -lsocket -lnsl -lresolv 
+bidder: bidder.c bidder.h
+	gcc -o bidder.out -g -Wall bidder.c -lpthread
 
-seller: seller.h seller.cpp
-	g++ -o seller.out -g -Wall seller.cpp -lpthread -lsocket -lnsl -lresolv 
-
-main.o:	main.h main.cpp
-	g++ -g -c -Wall main.cpp -lpthread
+seller: seller.h seller.c
+	gcc -o seller.out -g -Wall seller.c -lpthread
 
 display: 
 	@ echo "\n----------------*.txt--------------------\n"
