@@ -10,6 +10,7 @@
 #include <arpa/inet.h> 
 #include <sys/wait.h>
 #include <pthread.h>
+#include <signal.h>
 
 #include "auctionserver.h"
 
