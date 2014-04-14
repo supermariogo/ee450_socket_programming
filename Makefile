@@ -1,47 +1,47 @@
 nunki: server bidder seller 
-	mv bidder.out bidder1.out
-	cp bidder1.out bidder2.out
-	mv seller.out seller1.out
-	cp seller1.out seller2.out
+	mv bidder.o bidder1.o
+	cp bidder1.o bidder2.o
+	mv seller.o seller1.o
+	cp seller1.o seller2.o
 	@ echo "\n----------------*.txt--------------------\n"
 	@ ls *.txt
-	@ echo "\n----------------*.out--------------------\n"
-	@ ls *.out
+	@ echo "\n----------------*.o--------------------\n"
+	@ ls *.o
 
 server: auctionserver.h auctionserver.c
-	gcc -o server.out -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
+	gcc -o server.o -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
 
 bidder: bidder.c bidder.h
-	gcc -o bidder.out -g -Wall bidder.c -lpthread -lsocket -lnsl -lresolv
+	gcc -o bidder.o -g -Wall bidder.c -lpthread -lsocket -lnsl -lresolv
 
 seller: seller.h seller.c
-	gcc -o seller.out -g -Wall seller.c -lpthread -lsocket -lnsl -lresolv
+	gcc -o seller.o -g -Wall seller.c -lpthread -lsocket -lnsl -lresolv
 
 u: server_u bidder_u seller_u 
-	mv bidder.out bidder1.out
-	cp bidder1.out bidder2.out
-	mv seller.out seller1.out
-	cp seller1.out seller2.out
+	mv bidder.o bidder1.o
+	cp bidder1.o bidder2.o
+	mv seller.o seller1.o
+	cp seller1.o seller2.o
 	@ echo "\n----------------*.txt--------------------\n"
 	@ ls *.txt
-	@ echo "\n----------------*.out--------------------\n"
-	@ ls *.out
+	@ echo "\n----------------*.o--------------------\n"
+	@ ls *.o
 
 server_u: auctionserver.h auctionserver.c
-	gcc -o server.out -g -Wall auctionserver.c -lpthread  
+	gcc -o server.o -g -Wall auctionserver.c -lpthread  
 
 bidder_u: bidder.c bidder.h
-	gcc -o bidder.out -g -Wall bidder.c -lpthread 
+	gcc -o bidder.o -g -Wall bidder.c -lpthread 
 
 seller_u: seller.h seller.c
-	gcc -o seller.out -g -Wall seller.c -lpthread 
+	gcc -o seller.o -g -Wall seller.c -lpthread 
 
 
 display: 
 	@ echo "\n----------------*.txt--------------------\n"
 	@ ls *.txt
-	@ echo "\n----------------*.out--------------------\n"
-	@ ls *.out
+	@ echo "\n----------------*.o--------------------\n"
+	@ ls *.o
 	@ echo "\n"
 
 clean:
