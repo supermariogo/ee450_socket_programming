@@ -7,7 +7,6 @@ nunki: server bidder seller
 	@ ls *.txt
 	@ echo "\n----------------*.out--------------------\n"
 	@ ls *.out
-	@ echo "\n"
 
 server: auctionserver.h auctionserver.c
 	gcc -o server.out -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
@@ -18,7 +17,7 @@ bidder: bidder.c bidder.h
 seller: seller.h seller.c
 	gcc -o seller.out -g -Wall seller.c -lpthread -lsocket -lnsl -lresolv
 
-ubuntu: server_u bidder_u seller_u 
+u: server_u bidder_u seller_u 
 	mv bidder.out bidder1.out
 	cp bidder1.out bidder2.out
 	mv seller.out seller1.out
@@ -27,7 +26,6 @@ ubuntu: server_u bidder_u seller_u
 	@ ls *.txt
 	@ echo "\n----------------*.out--------------------\n"
 	@ ls *.out
-	@ echo "\n"
 
 server_u: auctionserver.h auctionserver.c
 	gcc -o server.out -g -Wall auctionserver.c -lpthread  
