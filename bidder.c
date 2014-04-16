@@ -2,63 +2,44 @@
 #include "bidder.h"
 
 
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;  
-    char buf[MAXDATASIZE];
-    struct addrinfo hints, *servinfo, *p;
-    int rv;
-    char s[INET6_ADDRSTRLEN];
+	int bidder_phase1_sfd_c; //socket fd 
+	struct sockaddr_in bidder_phase1_addr; // connect info
+	
+	memset(&bidder_phase1_addr, 0, sizeof(bidder_phase1_addr)); 
+    bidder_phase1_addr.sin_family = AF_INET; 
+    bidder_phase1_addr.sin_addr.s_addr = htonl(INADDR_ANY); //use local address 
+    bidder_phase1_addr.sin_port = htons(SERVER_PHASE1_PORT); 
 
+	fprintf(stdout, "Hello, I am bidder%d\n",BIDDERX);
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+	bidder_phase1_sfd_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
+    if (connect(bidder_phase1_sfd_c, (struct sockaddr *) &bidder_phase1_addr, sizeof(bidder_phase1_addr)) == -1) {
+        close(bidder_phase1_sfd_c);
+        perror("bidder error : connect");
+		exit(-1);
+    }	
 
-    if ((rv = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-        return 1;
-    }
+	if(BIDDERX==1){
+		if (send(bidder_phase1_sfd_c, "hello world1",13,0)==-1){
+    	    perror("bidder error : send");
+		} 
 
-    // loop through all the results and connect to the first we can
-    for(p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,p->ai_protocol)) == -1) {
-            perror("client: socket");
-            continue;
-        }
+		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
+    	    perror("bidder error : send");	
+		}
+	}
+	else{
+		if (send(bidder_phase1_sfd_c, "hello world2",13,0)==-1){
+    	    perror("bidder error : send");	
+		} 
 
-        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            close(sockfd);
-            perror("client: connect");
-            continue;
-        }
+		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
+    	    perror("bidder error : send");	
+		}	
+	}
 
-        break;
-    }
-
-    if (p == NULL) {
-        fprintf(stderr, "client: failed to connect\n");
-        return 2;
-    }
-
-    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
-            s, sizeof s);
-    printf("client: connecting to %s\n", s);
-
-    freeaddrinfo(servinfo); // all done with this structure
-
-	send(sockfd, "Hello, world!", 13, 0);
-
-    close(sockfd);
-
+	close(bidder_phase1_sfd_c);	
     return 0;
 }

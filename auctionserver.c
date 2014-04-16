@@ -1,6 +1,6 @@
 #include "port.h"
 #include "auctionserver.h"
-
+#include <pthread.h>
 int main(int argc, char * argv[]) 
 { 
         int s_s; 
@@ -13,15 +13,15 @@ int main(int argc, char * argv[])
         local.sin_port = htons(SERVER_PHASE1_PORT); 
  
 		if (bind(s_s, (struct sockaddr *) &local, sizeof(local)) == -1) {
-			perror("bind");
+			perror("server error : bind");
 			exit(1);
 		}
 
         if (listen(s_s, BACKLOG) == -1) {
-        	perror("listen");
+        	perror("server error : listen");
 			exit(1);
 		}
-
+		fprintf(stdout, "server : begin to listen\n");
         handle_connect(s_s); 
         close(s_s); 
  
@@ -34,14 +34,14 @@ static void handle_connect(int s_s)
         struct sockaddr_in from; 
         socklen_t len = sizeof(from); 
         pthread_t thread_do; 
- 
+		
         while (1) 
         { 
                 s_c = accept(s_s, (struct sockaddr *) &from, &len); 
                 if (s_c > 0) 
                 {
 					pthread_create(&thread_do, NULL, handle_request, (void *) &s_c);
-					fprintf(stdout, "new thread for connection created\n");
+					fprintf(stdout, "server : created thread %d\n",(int)thread_do);
 					//ptherad_join() is set as default
                 } 
         } 
@@ -49,21 +49,19 @@ static void handle_connect(int s_s)
 
 static void * handle_request(void * argv) 
 { 
-        int s_c = * ((int *) argv); 
-        char buff[BUFFLEN]; 
-        char m_buff[BUFFLEN]; 
-        while (1) { 
-                int n = 0; 
-                memset(buff, 0, BUFFLEN); 
-                memset(m_buff, 0, BUFFLEN); 
-                n = recv(s_c, buff, BUFFLEN, 0); 
-                if (n > 0) 
-                { 
-					printf("接收到%s \r\n", buff);       
-                } 
-                close(s_c); 
-        }
-		return NULL;
+	int s_c = * ((int *) argv); 
+ 	char buff[BUFFLEN]; 
+ 	int n = 0; 
+ 	memset(buff, 0, BUFFLEN); 
+ 	
+ 	while (1) {
+		n = recv(s_c, buff, BUFFLEN, 0);
+		if (n > 0) 
+ 		{ 
+ 			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);       
+ 		} 
+ 	}
+ 	return NULL;
 } 
  
 

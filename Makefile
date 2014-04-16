@@ -30,7 +30,7 @@ bidder_u: bidder.c bidder.h
 
 seller_u: seller.h seller.c
 	gcc -DSELLERX=1 -o seller1.o -g -Wall seller.c -lpthread
-	gcc -DSELLERX=2 -o seller1.o -g -Wall seller.c -lpthread
+	gcc -DSELLERX=2 -o seller2.o -g -Wall seller.c -lpthread
 
 
 display: 
