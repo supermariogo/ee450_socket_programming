@@ -1,24 +1,5 @@
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <unistd.h> 
-#include <errno.h> 
-#include <string.h> 
-#include <netdb.h> 
-#include <sys/types.h> 
-#include <netinet/in.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <sys/wait.h>
-#include <pthread.h>
-#include <signal.h>
-
+#include "port.h"
 #include "auctionserver.h"
-
-#define SERVER_PORT 3490  // the port users will be connecting to
-#define BUFFLEN 1024
-#define BACKLOG 10     // how many pending connections queue will hold
-
-
 
 int main(int argc, char * argv[]) 
 { 
@@ -29,7 +10,7 @@ int main(int argc, char * argv[])
         memset(&local, 0, sizeof(local)); 
         local.sin_family = AF_INET; 
         local.sin_addr.s_addr = htonl(INADDR_ANY); 
-        local.sin_port = htons(SERVER_PORT); 
+        local.sin_port = htons(SERVER_PHASE1_PORT); 
  
 		if (bind(s_s, (struct sockaddr *) &local, sizeof(local)) == -1) {
 			perror("bind");
