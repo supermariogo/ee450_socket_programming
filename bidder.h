@@ -1,0 +1,1 @@
+#define bidderx 1

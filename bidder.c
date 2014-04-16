@@ -12,7 +12,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include "bidder.h"
+#include "bidder1.h"
 
 #define PORT "3490" // the port client will be connecting to 
 
@@ -48,8 +48,7 @@ int main(int argc, char *argv[])
 
     // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                p->ai_protocol)) == -1) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,p->ai_protocol)) == -1) {
             perror("client: socket");
             continue;
         }
@@ -74,14 +73,7 @@ int main(int argc, char *argv[])
 
     freeaddrinfo(servinfo); // all done with this structure
 
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
-        perror("recv");
-        exit(1);
-    }
-
-    buf[numbytes] = '\0';
-
-    printf("client: received '%s'\n",buf);
+	send(sockfd, "Hello, world!", 13, 0);
 
     close(sockfd);
 
