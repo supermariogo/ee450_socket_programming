@@ -5,17 +5,17 @@
 int main(int argc, char *argv[])
 {
 	int bidder_phase1_sfd_c; //socket fd 
-	struct sockaddr_in bidder_phase1_addr; // connect info
+	struct sockaddr_in bidder_phase1_addr_info; // connect info
 	
-	memset(&bidder_phase1_addr, 0, sizeof(bidder_phase1_addr)); 
-    bidder_phase1_addr.sin_family = AF_INET; 
-    bidder_phase1_addr.sin_addr.s_addr = htonl(INADDR_ANY); //use local address 
-    bidder_phase1_addr.sin_port = htons(SERVER_PHASE1_PORT); 
+	memset(&bidder_phase1_addr_info, 0, sizeof(bidder_phase1_addr_info)); 
+    bidder_phase1_addr_info.sin_family = AF_INET; 
+    bidder_phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); //use local address 
+    bidder_phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); 
 
 	fprintf(stdout, "Hello, I am bidder%d\n",BIDDERX);
 
 	bidder_phase1_sfd_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
-    if (connect(bidder_phase1_sfd_c, (struct sockaddr *) &bidder_phase1_addr, sizeof(bidder_phase1_addr)) == -1) {
+    if (connect(bidder_phase1_sfd_c, (struct sockaddr *) &bidder_phase1_addr_info, sizeof(bidder_phase1_addr_info)) == -1) {
         close(bidder_phase1_sfd_c);
         perror("bidder error : connect");
 		exit(-1);
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 		if (send(bidder_phase1_sfd_c, "hello world1",13,0)==-1){
     	    perror("bidder error : send");
 		} 
-
+		sleep(2);
 		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
     	    perror("bidder error : send");	
 		}
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 		if (send(bidder_phase1_sfd_c, "hello world2",13,0)==-1){
     	    perror("bidder error : send");	
 		} 
-
+sleep(2);
 		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
     	    perror("bidder error : send");	
 		}	

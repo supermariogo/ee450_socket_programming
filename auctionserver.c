@@ -3,32 +3,32 @@
 #include <pthread.h>
 int main(int argc, char * argv[]) 
 { 
-        int s_s; 
-        struct sockaddr_in local;
-        s_s = socket(AF_INET, SOCK_STREAM, 0); 
+        int server_phase1_sfd_s ; 
+        struct sockaddr_in server_phase1_addr_info;
+        server_phase1_sfd_s = socket(AF_INET, SOCK_STREAM, 0); 
  
-        memset(&local, 0, sizeof(local)); 
-        local.sin_family = AF_INET; 
-        local.sin_addr.s_addr = htonl(INADDR_ANY); 
-        local.sin_port = htons(SERVER_PHASE1_PORT); 
+        memset(&server_phase1_addr_info, 0, sizeof(server_phase1_addr_info)); 
+        server_phase1_addr_info.sin_family = AF_INET; 
+        server_phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); 
+        server_phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); 
  
-		if (bind(s_s, (struct sockaddr *) &local, sizeof(local)) == -1) {
+		if (bind(server_phase1_sfd_s, (struct sockaddr *) &server_phase1_addr_info, sizeof(server_phase1_addr_info)) == -1) {
 			perror("server error : bind");
 			exit(1);
 		}
 
-        if (listen(s_s, BACKLOG) == -1) {
+        if (listen(server_phase1_sfd_s, BACKLOG) == -1) {
         	perror("server error : listen");
 			exit(1);
 		}
 		fprintf(stdout, "server : begin to listen\n");
-        handle_connect(s_s); 
-        close(s_s); 
+        handle_connect(server_phase1_sfd_s); 
+        close(server_phase1_sfd_s); 
  
         return 0; 
 } 
  
-static void handle_connect(int s_s) 
+static void handle_connect(int server_phase1_sfd_s) 
 { 
         int s_c; 
         struct sockaddr_in from; 
@@ -37,7 +37,7 @@ static void handle_connect(int s_s)
 		
         while (1) 
         { 
-                s_c = accept(s_s, (struct sockaddr *) &from, &len); 
+                s_c = accept(server_phase1_sfd_s, (struct sockaddr *) &from, &len); 
                 if (s_c > 0) 
                 {
 					pthread_create(&thread_do, NULL, handle_request, (void *) &s_c);
