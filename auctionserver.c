@@ -63,7 +63,7 @@ static void * handle_request(void * argv)
 		n = recv(s_c, buff, BUFFLEN, 0);
 		if (n > 0) 
  			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);       
-		fprintf(stderr, "am i waiting?\n");
+		fprintf(stderr, "am i waiting? %d\n",n);
 		//phase1_login_check(buff);
  	}
 	
