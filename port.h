@@ -23,7 +23,14 @@
 #include <signal.h>
 
 
-
+typedef struct tag_user_data {
+	char type[2];
+    char name[32];
+	char password[32];
+	char account[32];
+	char register_success;
+	char command[256];
+} user_data_t;
 
 
 

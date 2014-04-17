@@ -1,9 +1,12 @@
 #include "port.h"
 #include "bidder.h"
 
+user_data_t self_info;
 
 int main(int argc, char *argv[])
 {
+	file_read_self_info();
+
 	int bidder_phase1_sfd_c; //socket fd 
 	struct sockaddr_in bidder_phase1_addr_info; // connect info
 	
@@ -21,25 +24,46 @@ int main(int argc, char *argv[])
 		exit(-1);
     }	
 
-	if(BIDDERX==1){
-		if (send(bidder_phase1_sfd_c, "hello world1",13,0)==-1){
-    	    perror("bidder error : send");
-		} 
-		sleep(2);
-		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
-    	    perror("bidder error : send");	
-		}
-	}
-	else{
-		if (send(bidder_phase1_sfd_c, "hello world2",13,0)==-1){
-    	    perror("bidder error : send");	
-		} 
-sleep(2);
-		if (send(bidder_phase1_sfd_c, "hello world",12,0)==-1){
-    	    perror("bidder error : send");	
-		}	
-	}
-
+	if (send(bidder_phase1_sfd_c, self_info.command,strlen(self_info.command),0)==-1)
+    	perror("bidder error : send");
+		
 	close(bidder_phase1_sfd_c);	
     return 0;
+}
+
+
+void file_read_self_info(void)
+{
+	FILE * fp;
+	if(BIDDERX==1)
+		fp = fopen ("bidderPass1.txt","r"); 
+	else
+		fp = fopen ("bidderPass2.txt","r");  
+	char current_line[1024];
+	char *tok = NULL;
+	if (fgets(current_line, 1024, fp)!=NULL ){
+
+		fprintf(stdout, "string before strtok(): %s\n", current_line);
+		tok = strtok(current_line," ");
+		strcpy(self_info.type,tok);	
+		tok = strtok(NULL," ");	
+		strcpy(self_info.name,tok);
+		tok = strtok(NULL, " ");
+		strcpy(self_info.password,tok);
+		tok = strtok(NULL, " \n");
+		strcpy(self_info.account,tok);
+
+		fprintf(stdout, "user.type=%s\n",self_info.type);	
+		fprintf(stdout, "user.name=%s\n",self_info.name);
+		fprintf(stdout, "user.password=%s\n",self_info.password);
+		fprintf(stdout, "user.account=%s\n",self_info.account);
+		
+	}
+	fclose(fp);
+
+	sprintf (self_info.command, "Login#%s %s %s %s", self_info.type, self_info.name, self_info.password, self_info.account);
+	//"Login#type username password bankaccount"
+	fprintf(stdout, "command: %s\n",self_info.command);
+
+
 }
