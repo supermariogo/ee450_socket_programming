@@ -1,6 +1,7 @@
 #include "port.h"
 #include "auctionserver.h"
-
+#include <unistd.h>
+#include <fcntl.h>
 user_data_t user[10];
 int user_number=0; // count from zero
 
@@ -49,6 +50,7 @@ static void handle_connect(int server_phase1_sfd_s)
 					fprintf(stdout, "server : thread %d created\n",(int)thread_do);
 					//ptherad_join() is set as default
                 } 
+				fprintf(stderr, "am i waiting for accept? \n");
         } 
 } 
 
@@ -58,14 +60,17 @@ static void * handle_request(void * argv)
  	char buff[BUFFLEN]; 
  	int n = 0; 
  	memset(buff, 0, BUFFLEN); 
- 	
- 	while (1) {
+	//if(fcntl(s_c, F_GETFL) & O_NONBLOCK) {
+    // socket is non-blocking
+	//fprintf(stdout, "non blocking\n");
+	//} 	
+ //	while (1) {
 		n = recv(s_c, buff, BUFFLEN, 0);
 		if (n > 0) 
  			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);       
 		fprintf(stderr, "am i waiting? %d\n",n);
 		//phase1_login_check(buff);
- 	}
+ //	}
 	
  	return NULL;
 }
