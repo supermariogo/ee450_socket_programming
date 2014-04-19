@@ -93,7 +93,7 @@ void file_read_self_info(int type, int X, user_data_t * self_info)
 	}
 	fclose(fp);
 
-	sprintf (self_info->command, "Login#%s %s %s %s", self_info->type, self_info->name, self_info->password, self_info->account);
+	sprintf (self_info->command, "Login#%s %s %s %s\n", self_info->type, self_info->name, self_info->password, self_info->account);
 	//"Login#type username password bankaccount"
 	fprintf(stdout, "command: %s\n",self_info->command);
 

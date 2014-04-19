@@ -3,58 +3,78 @@
 #include <unistd.h>
 #include <fcntl.h>
 user_data_t user[10];
-int user_number=0; // count from zero
+int user_number=0; // count from zero, valid user, success = 1
+
 
 int main(int argc, char * argv[]) 
 { 
 	file_read_reg();
 
-	int server_phase1_sfd_s ; 
-	struct sockaddr_in server_phase1_addr_info;
-	server_phase1_sfd_s = socket(AF_INET, SOCK_STREAM, 0); 
+	int phase1_s_s;
+	phase1_s_s=phase1_socket_bind_listen();	
+	phase1_handle_connect(phase1_s_s); 
+	close(phase1_s_s); 
 	
-	memset(&server_phase1_addr_info, 0, sizeof(server_phase1_addr_info)); 
-	server_phase1_addr_info.sin_family = AF_INET; 
-	server_phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); 
-	server_phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT);
+	return 0; 
+}
+
+
+
+int phase1_socket_bind_listen(){
+	int phase1_s_s ; 
+	struct sockaddr_in phase1_addr_info;
+	phase1_s_s = socket(AF_INET, SOCK_STREAM, 0); 
 	
-	if (bind(server_phase1_sfd_s, (struct sockaddr *) &server_phase1_addr_info, sizeof(server_phase1_addr_info)) == -1) {
+	memset(&phase1_addr_info, 0, sizeof(phase1_addr_info)); 
+	phase1_addr_info.sin_family = AF_INET; 
+	phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); 
+	phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT);
+	
+	if (bind(phase1_s_s, (struct sockaddr *) &phase1_addr_info, sizeof(phase1_addr_info)) == -1) {
 		perror("server error : bind");
 		exit(1);
 	}
 	
-	if (listen(server_phase1_sfd_s, BACKLOG) == -1) {
+	if (listen(phase1_s_s, BACKLOG) == -1) {
 		perror("server error : listen");
 		exit(1);
 	}
 	fprintf(stdout, "server : begin to listen\n");
-	handle_connect(server_phase1_sfd_s); 
-	close(server_phase1_sfd_s); 
-	
-	return 0; 
+	return phase1_s_s;
+
 } 
- 
-static void handle_connect(int server_phase1_sfd_s) 
+void phase1_handle_connect(int phase1_s_s) 
 { 
         int s_c; 
         struct sockaddr_in from; 
         socklen_t len = sizeof(from); 
-        pthread_t thread_do; 
-		
+        pthread_t thread_do[4]; 
+		int phase1_thread_number=0;
+
         while (1) 
         { 
-                s_c = accept(server_phase1_sfd_s, (struct sockaddr *) &from, &len); 
+                s_c = accept(phase1_s_s, (struct sockaddr *) &from, &len); 
                 if (s_c > 0) 
                 {
-					pthread_create(&thread_do, NULL, handle_request, (void *) &s_c);
+					pthread_create(&thread_do[phase1_thread_number], NULL, phase1_handle_request, (void *) &s_c);
 					fprintf(stdout, "server : thread %d created\n",(int)thread_do);
+					phase1_thread_number++;
 					//ptherad_join() is set as default
-                } 
-				fprintf(stderr, "am i waiting for accept? \n");
+                }
+				if(phase1_thread_number==4){
+					(void) pthread_join(thread_do[0], NULL);	
+					(void) pthread_join(thread_do[1], NULL);
+					(void) pthread_join(thread_do[2], NULL);
+					(void) pthread_join(thread_do[3], NULL);
+					printf("End of Phase 1 for Auction Server\n");
+					fprintf(stdout, "--------------------------------------------\n");
+					return;
+				}
+
         } 
 } 
 
-static void * handle_request(void * argv) 
+void * phase1_handle_request(void * argv) 
 { 
 	int s_c = * ((int *) argv); 
  	char buff[BUFFLEN]; 
@@ -63,6 +83,7 @@ static void * handle_request(void * argv)
 	int i;
 	char command[256];
 	char myip[17];
+	user_data_t un_auth_user;
 	
 	n = recv(s_c, buff, BUFFLEN, 0);
 	if (n > 0) 
@@ -72,50 +93,63 @@ static void * handle_request(void * argv)
 		close(s_c);
 		pthread_exit(NULL);
 	}
-	i=phase1_login_check(buff);
-	get_peer_ip_or_port(s_c,user[i].ip,1);
-	get_peer_ip_or_port(s_c,user[i].port,2);
 	
-	if(i==-1){
-		//authentication fail
-		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: reject\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);	
-		fprintf(stderr, "client disconnected, socket close thread exit\n");
+	i=phase1_login_check(buff,&un_auth_user);
+
+	if(i==-1){ //authentication reject
+		get_peer_ip_or_port(s_c,un_auth_user.ip,1);
+		get_peer_ip_or_port(s_c,un_auth_user.port,2);
+		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,un_auth_user.name,un_auth_user.password,un_auth_user.account,un_auth_user.ip);
+		fprintf(stdout, "User Port %s ",un_auth_user.port);
+		printf("Authorized: reject\n");	
 		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1)
 			perror("server error : send");
 		close(s_c);
 		pthread_exit(NULL);
-		
-	}else{
-		user[i].authentication_success=1; 
-		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);
+	}else{ //authentication accept 
+		user[i].authentication_success=1;
+		get_peer_ip_or_port(s_c,user[i].ip,1);
+		get_peer_ip_or_port(s_c,user[i].port,2);
+		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,user[i].name,user[i].password,user[i].account,user[i].ip);
+		fprintf(stdout, "User Port %s ",user[i].port);	
+		printf("Authorized: accept\n");
 	}
 	
-
-	//authentication success
-	if(user[i].type[0]=='2'){
-		get_my_ip(s_c,myip);	
-		sprintf(command,"Accepted#%s#%d#",myip,SERVER_PHASE2_PORT);
-		if (send(s_c, command,strlen(command),0)==-1)
+	//authentication accept
+	if(user[i].type[0]=='1'){
+		sprintf(command,"Accepted#");
+		if (send(s_c, command,strlen(command),0)==-1){
 			perror("server error : send");
+			close(s_c);
+			pthread_exit(NULL);
+		}
+	}
+	else if(user[i].type[0]=='2'){
+		get_my_ip(s_c, myip);	
+		sprintf(command,"Accepted#%s#%d#",myip,SERVER_PHASE2_PORT);
+		if (send(s_c, command,strlen(command),0)==-1){
+			perror("server error : send");
+			close(s_c);
+			pthread_exit(NULL);
+		}
 		else{
 			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to the Seller",myip,SERVER_PHASE2_PORT);
-			
 		}
-	}else if(user[i].type[0]=='1'){
-		sprintf(command,"Accepted#");
-		if (send(s_c, command,strlen(command),0)==-1)
-			perror("server error : send");
+	}
+	else {
+		fprintf(stderr, "ivalid error,quit\n");
+		exit(0);
 	}
 
-	fprintf(stdout, "phase1 complete\n-----------------------------\n");
+	fprintf(stdout, "phase1 for this user complete\n-----------------------------\n");
 	close(s_c);
 	pthread_exit(NULL);
 	
  	return NULL;
 }
 
-int phase1_login_check(char *buff){
-	user_data_t login_command;
+int phase1_login_check(char *buff, user_data_t * un_auth_user){
+	user_data_t temp_user;
 	char * tok;
 	int i;
 	fprintf(stdout, "string before strtok(): %s\n", buff);
@@ -125,30 +159,30 @@ int phase1_login_check(char *buff){
 		pthread_exit(NULL);	
 	}
 	tok = strtok(NULL, " ");
-	strcpy(login_command.type,tok);
+	strcpy(temp_user.type,tok);
 	tok = strtok(NULL, " ");
-	strcpy(login_command.name,tok);
+	strcpy(temp_user.name,tok);
 	tok = strtok(NULL, " ");
-	strcpy(login_command.password,tok);
+	strcpy(temp_user.password,tok);
 	tok = strtok(NULL, " \n");
-	strcpy(login_command.account,tok);
+	strcpy(temp_user.account,tok);
 
 	//check
 	for (i = 0; i < user_number; i++) {
-		if(strcmp(login_command.name,user[i].name))
+		if(strcmp(temp_user.name,user[i].name))
 			continue;
-		if(strcmp(login_command.password,user[i].password))
+		if(strcmp(temp_user.password,user[i].password))
 			continue;
-		if(strcmp(login_command.account,user[i].account))
+		if(strcmp(temp_user.account,user[i].account))
 			continue;
-		strcpy(user[i].type,login_command.type);
+		strcpy(user[i].type,temp_user.type);
 		fprintf(stdout, "login success type=%s\n",user[i].type);
-		// assign user ip and port
-		
-
 		return i;
 	}
-	return -1;
+
+	//for no match
+	*un_auth_user=temp_user;		
+	return -1; 
 
 }
 
