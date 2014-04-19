@@ -182,33 +182,7 @@ void file_read_reg(void)
 }
 
 
-int get_peer_ip_or_port(int sockfd, char *dest, int type) 
-{
-	struct sockaddr_in peer_addr_info;
-	socklen_t len;
-	len = sizeof(peer_addr_info);
-	getpeername(sockfd, (struct sockaddr *)&peer_addr_info, &len);   //get ip and port info
-	if(type==1)
-		strcpy(dest,inet_ntoa(peer_addr_info.sin_addr)); //inet_ntoa return char*
-	else if(type==2)
-		sprintf(dest, "%u", htons(peer_addr_info.sin_port));       //htons因为网络传送是低位先传送
-	else{
-		fprintf(stderr, "wrong type for peer ip or port\n");
-		exit(-1);
-		}
-	return 1;
-}
 
-int get_my_ip(int server_fd, char *dest)
-{
-    struct sockaddr_in server_info;
-    int namelen = sizeof(server_info);
-    getsockname(server_fd, (struct sockaddr *)&server_info, (socklen_t *)&namelen);
-	sprintf(dest,"%s",inet_ntoa(server_info.sin_addr));
-    printf("server ip: %s\n", inet_ntoa(server_info.sin_addr));
-	//printf("port: %d\n", ntohs(server.sin_port));
-	return 1;
-}
 
 
  

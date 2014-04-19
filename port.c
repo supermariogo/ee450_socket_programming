@@ -1,9 +1,7 @@
 // these are shared functions
 #include "port.h"
-extern user_data_t self_info;
-extern char next_phase_ip[17];
-extern char next_phase_port[5];
-void phase1_processing(int type, int X)
+
+void phase1_processing(int type, int X, user_data_t * self_info)
 {
 	int phase1_sfd_c; //socket fd 
 	struct sockaddr_in phase1_addr_info; // connect info
@@ -26,7 +24,7 @@ void phase1_processing(int type, int X)
 		exit(-1);
     }	
 	
-	if (send(phase1_sfd_c, self_info.command,strlen(self_info.command),0)==-1)
+	if (send(phase1_sfd_c, self_info->command,strlen(self_info->command),0)==-1)
     	perror("client error : send");
 
 	n = recv(phase1_sfd_c, buff, BUFFLEN, 0);
@@ -47,18 +45,18 @@ void phase1_processing(int type, int X)
 	if(type==2){
 		//seller needs this info
 		tok = strtok(NULL, "#");
-		strcpy(next_phase_ip,tok);
+		strcpy(self_info->next_phase_ip,tok);
 		tok = strtok(NULL, "#");
-		strcpy(next_phase_port,tok);
+		strcpy(self_info->next_phase_port,tok);
 
-		fprintf(stdout, "next_phase_ip=%s\n",next_phase_ip);
-		fprintf(stdout, "next_phase_port=%s\n",next_phase_port);	
+		fprintf(stdout, "self_info->next_phase_ip=%s\n",self_info->next_phase_ip);
+		fprintf(stdout, "self_info->next_phase_port=%s\n",self_info->next_phase_port);	
 	}
 	close(phase1_sfd_c);
 	fprintf(stdout, "I was accpted, begin phase2?\n");
 	fprintf(stdout, "----------------------------------------\n");
 }
-void file_read_self_info(int type, int X)
+void file_read_self_info(int type, int X, user_data_t * self_info)
 {
 	FILE * fp;
 	char current_line[1024];
@@ -79,25 +77,25 @@ void file_read_self_info(int type, int X)
 
 		fprintf(stdout, "string before strtok(): %s\n", current_line);
 		tok = strtok(current_line," ");
-		strcpy(self_info.type,tok);	
+		strcpy(self_info->type,tok);	
 		tok = strtok(NULL," ");	
-		strcpy(self_info.name,tok);
+		strcpy(self_info->name,tok);
 		tok = strtok(NULL, " ");
-		strcpy(self_info.password,tok);
+		strcpy(self_info->password,tok);
 		tok = strtok(NULL, " \n");
-		strcpy(self_info.account,tok);
+		strcpy(self_info->account,tok);
 
-		fprintf(stdout, "user.type=%s\n",self_info.type);	
-		fprintf(stdout, "user.name=%s\n",self_info.name);
-		fprintf(stdout, "user.password=%s\n",self_info.password);
-		fprintf(stdout, "user.account=%s\n",self_info.account);
+		fprintf(stdout, "user.type=%s\n",self_info->type);	
+		fprintf(stdout, "user.name=%s\n",self_info->name);
+		fprintf(stdout, "user.password=%s\n",self_info->password);
+		fprintf(stdout, "user.account=%s\n",self_info->account);
 		
 	}
 	fclose(fp);
 
-	sprintf (self_info.command, "Login#%s %s %s %s", self_info.type, self_info.name, self_info.password, self_info.account);
+	sprintf (self_info->command, "Login#%s %s %s %s", self_info->type, self_info->name, self_info->password, self_info->account);
 	//"Login#type username password bankaccount"
-	fprintf(stdout, "command: %s\n",self_info.command);
+	fprintf(stdout, "command: %s\n",self_info->command);
 
 }
 

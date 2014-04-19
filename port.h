@@ -34,11 +34,13 @@ typedef struct tag_user_data {
 	char ip[17];
 	char port[6];
 	int  authentication_success;
+	char next_phase_ip[17];
+	char next_phase_port[5];
 
 } user_data_t;
 
-extern void phase1_processing(int type, int x);
-extern void file_read_self_info(int type, int x);
+extern void phase1_processing(int type, int X, user_data_t * self_info);
+extern void file_read_self_info(int type, int X, user_data_t * self_info);
 
 extern int get_peer_ip_or_port(int sockfd, char *dest, int type);
 extern int get_my_ip(int server_fd, char *dest);

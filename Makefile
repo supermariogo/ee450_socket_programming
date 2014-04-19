@@ -4,17 +4,17 @@ nunki: port server bidder seller
 	@ echo "\n----------------*.o--------------------\n"
 	@ ls *.o
 port:
-	gcc -g -DSERVERHOST=NUNKI -c -Wall -o port.o port.c
+	gcc -g -DSERVERHOST=NUNKI -c -Wall -o port.so port.c
 server: 
 	gcc -o server.o -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
 
 bidder: 
-	gcc -DBIDDERX=1 -DSERVERHOST=NUNKI -o bidder1.o -g -Wall bidder.c port.o -lpthread -lsocket -lnsl -lresolv
-	gcc -DBIDDERX=2 -DSERVERHOST=NUNKI -o bidder2.o -g -Wall bidder.c port.o -lpthread -lsocket -lnsl -lresolv
+	gcc -DBIDDERX=1 -DSERVERHOST=NUNKI -o bidder1.o -g -Wall bidder.c port.so -lpthread -lsocket -lnsl -lresolv
+	gcc -DBIDDERX=2 -DSERVERHOST=NUNKI -o bidder2.o -g -Wall bidder.c port.so -lpthread -lsocket -lnsl -lresolv
 
 seller: 
-	gcc -DSELLERX=1 -DSERVERHOST=NUNKI -o seller1.o -g -Wall seller.c port.o -lpthread -lsocket -lnsl -lresolv
-	gcc -DSELLERX=2 -DSERVERHOST=NUNKI -o seller2.o -g -Wall seller.c port.o -lpthread -lsocket -lnsl -lresolv
+	gcc -DSELLERX=1 -DSERVERHOST=NUNKI -o seller1.o -g -Wall seller.c port.so -lpthread -lsocket -lnsl -lresolv
+	gcc -DSELLERX=2 -DSERVERHOST=NUNKI -o seller2.o -g -Wall seller.c port.so -lpthread -lsocket -lnsl -lresolv
 
 u: port_u server_u bidder_u seller_u 
 	@ echo "\n----------------*.txt--------------------\n"
@@ -22,18 +22,18 @@ u: port_u server_u bidder_u seller_u
 	@ echo "\n----------------*.o--------------------\n"
 	@ ls *.o
 port_u: 
-	gcc -g -DSERVERHOST=LOCALHOST -c -Wall -o port.o port.c
+	gcc -g -DSERVERHOST=LOCALHOST -c -Wall  -fPIC -shared port.c -o port.so
 
 server_u: 
-	gcc -o server.o -g -Wall auctionserver.c -lpthread  
+	gcc -o server.o -g -Wall auctionserver.c -L. port.so -lpthread  
 
 bidder_u: 
-	gcc -DBIDDERX=1 -DSERVERHOST=LOCALHOST -o bidder1.o -g -Wall bidder.c port.o -lpthread
-	gcc -DBIDDERX=2 -DSERVERHOST=LOCALHOST -o bidder2.o -g -Wall bidder.c port.o -lpthread
+	gcc -DBIDDERX=1 -DSERVERHOST=LOCALHOST -o bidder1.o -g -Wall bidder.c -L. port.so -lpthread
+	gcc -DBIDDERX=2 -DSERVERHOST=LOCALHOST -o bidder2.o -g -Wall bidder.c -L. port.so -lpthread
 
 seller_u: 
-	gcc -DSELLERX=1 -DSERVERHOST=LOCALHOST -o seller1.o -g -Wall seller.c port.o -lpthread
-	gcc -DSELLERX=2	-DSERVERHOST=LOCALHOST -o seller2.o -g -Wall seller.c port.o -lpthread
+	gcc -DSELLERX=1 -DSERVERHOST=LOCALHOST -o seller1.o -g -Wall seller.c -L. port.so -lpthread
+	gcc -DSELLERX=2	-DSERVERHOST=LOCALHOST -o seller2.o -g -Wall seller.c -L. port.so -lpthread
 
 
 
