@@ -30,7 +30,12 @@ typedef struct tag_user_data {
 	char account[32];
 	char register_success;
 	char command[256];
+	char ip[17];
+	char port[6];
+	int  authentication_success; 
 } user_data_t;
+
+
 
 
 

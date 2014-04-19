@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
 	memset(&server_phase1_addr_info, 0, sizeof(server_phase1_addr_info)); 
 	server_phase1_addr_info.sin_family = AF_INET; 
 	server_phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); 
-	server_phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); 
+	server_phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT);
 	
 	if (bind(server_phase1_sfd_s, (struct sockaddr *) &server_phase1_addr_info, sizeof(server_phase1_addr_info)) == -1) {
 		perror("server error : bind");
@@ -59,18 +59,29 @@ static void * handle_request(void * argv)
 	int s_c = * ((int *) argv); 
  	char buff[BUFFLEN]; 
  	int n = 0; 
- 	memset(buff, 0, BUFFLEN); 
+ 	memset(buff, 0, BUFFLEN);
+	int i;
 	//if(fcntl(s_c, F_GETFL) & O_NONBLOCK) {
     // socket is non-blocking
 	//fprintf(stdout, "non blocking\n");
 	//} 	
- //	while (1) {
+ 	while (1) {
 		n = recv(s_c, buff, BUFFLEN, 0);
 		if (n > 0) 
- 			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);       
-		fprintf(stderr, "am i waiting? %d\n",n);
-		//phase1_login_check(buff);
- //	}
+ 			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+		else 
+			fprintf(stderr, "client disconnected\n");
+		i=phase1_login_check(buff);
+		get_peer_ip_or_port(s_c,user[i].ip,1);
+		get_peer_ip_or_port(s_c,user[i].port,2);
+		
+		if(i==-1){
+			printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);	
+		}else{
+			user[i].authentication_success=1; 
+			printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);
+		}
+ 	}
 	
  	return NULL;
 }
@@ -104,9 +115,12 @@ int phase1_login_check(char *buff){
 			continue;
 		strcpy(user[i].type,login_command.type);
 		fprintf(stdout, "login success type=%s\n",user[i].type);
+		// assign user ip and port
+		
+
 		return i;
 	}
-	return 999;
+	return -1;
 
 }
 
@@ -138,5 +152,24 @@ void file_read_reg(void)
 	fclose(fp);
 
 }
+
+
+int get_peer_ip_or_port(int sockfd, char *dest, int type) 
+{
+	struct sockaddr_in peer_addr_info;
+	socklen_t len;
+	len = sizeof(peer_addr_info);
+	getpeername(sockfd, (struct sockaddr *)&peer_addr_info, &len);   //get ip and port info
+	if(type==1)
+		strcpy(dest,inet_ntoa(peer_addr_info.sin_addr)); //inet_ntoa return char*
+	else if(type==2)
+		sprintf(dest, "%u", htons(peer_addr_info.sin_port));       //htons因为网络传送是低位先传送
+	else{
+		fprintf(stderr, "wrong type for peer ip or port\n");
+		exit(-1);
+		}
+	return 1;
+}
+
  
 

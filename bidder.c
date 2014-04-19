@@ -23,11 +23,14 @@ int main(int argc, char *argv[])
         perror("bidder error : connect");
 		exit(-1);
     }	
+	
+	//while(1);
 
-	//if (send(bidder_phase1_sfd_c, self_info.command,strlen(self_info.command),0)==-1)
+	if (send(bidder_phase1_sfd_c, self_info.command,strlen(self_info.command),0)==-1)
     	perror("bidder error : send");
+
 		
-	//close(bidder_phase1_sfd_c);	
+	close(bidder_phase1_sfd_c);	
     return 0;
 }
 
