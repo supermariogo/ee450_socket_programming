@@ -28,12 +28,12 @@ server_u:
 	gcc auctionserver.c port.o -o server.o -g -Wall -lpthread  
 
 bidder_u: 
-	gcc bidder.c  port.o -o bidder2.o -DBIDDERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
+	gcc bidder.c  port.o -o bidder1.o -DBIDDERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
 	gcc bidder.c  port.o -o bidder2.o -DBIDDERX=2 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
 
 seller_u: 
 	gcc seller.c  port.o -o seller1.o -DSELLERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
-	gcc seller.c  port.o -o seller1.o -DSELLERX=2 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
+	gcc seller.c  port.o -o seller2.o -DSELLERX=2 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
 
 clean:
 	rm -f *.o *~ *.out *.so

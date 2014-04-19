@@ -8,6 +8,8 @@ int user_number=0; // count from zero, valid user, success = 1
 
 int main(int argc, char * argv[]) 
 { 
+
+	memset(&user, 0, sizeof(user[10]));
 	file_read_reg();
 
 	int phase1_s_s;
@@ -62,10 +64,10 @@ void phase1_handle_connect(int phase1_s_s)
 					//ptherad_join() is set as default
                 }
 				if(phase1_thread_number==4){
-					(void) pthread_join(thread_do[0], NULL);	
-					(void) pthread_join(thread_do[1], NULL);
-					(void) pthread_join(thread_do[2], NULL);
-					(void) pthread_join(thread_do[3], NULL);
+					pthread_join(thread_do[0], NULL);	
+					pthread_join(thread_do[1], NULL);
+					pthread_join(thread_do[2], NULL);
+					pthread_join(thread_do[3], NULL);
 					printf("End of Phase 1 for Auction Server\n");
 					fprintf(stdout, "--------------------------------------------\n");
 					return;
@@ -101,7 +103,8 @@ void * phase1_handle_request(void * argv)
 		get_peer_ip_or_port(s_c,un_auth_user.port,2);
 		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,un_auth_user.name,un_auth_user.password,un_auth_user.account,un_auth_user.ip);
 		fprintf(stdout, "User Port %s ",un_auth_user.port);
-		printf("Authorized: reject\n");	
+		printf("Authorized: reject\n");
+		fprintf(stdout, "------------------------------------------\n");
 		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1)
 			perror("server error : send");
 		close(s_c);
@@ -125,7 +128,7 @@ void * phase1_handle_request(void * argv)
 		}
 	}
 	else if(user[i].type[0]=='2'){
-		get_my_ip(s_c, myip);	
+		get_my_ip_or_port(s_c, myip, 1);	
 		sprintf(command,"Accepted#%s#%d#",myip,SERVER_PHASE2_PORT);
 		if (send(s_c, command,strlen(command),0)==-1){
 			perror("server error : send");
@@ -133,7 +136,7 @@ void * phase1_handle_request(void * argv)
 			pthread_exit(NULL);
 		}
 		else{
-			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to the Seller",myip,SERVER_PHASE2_PORT);
+			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to the Seller\n",myip,SERVER_PHASE2_PORT);
 		}
 	}
 	else {
@@ -215,8 +218,3 @@ void file_read_reg(void)
 
 }
 
-
-
-
-
- 

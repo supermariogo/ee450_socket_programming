@@ -12,8 +12,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	memset(&phase1_addr_info, 0, sizeof(phase1_addr_info)); 
     phase1_addr_info.sin_family = AF_INET;
 	inet_pton(AF_INET,SERVERHOST, &phase1_addr_info.sin_addr);
-    //phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); //use local address 
-    phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); 
+    phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); //from host byte order to network byte order.  
 
 	fprintf(stdout, "Hello, I am type%d(1bidder 2seller) #%d\n",type, X);
 
@@ -22,7 +21,10 @@ void phase1_processing(int type, int X, user_data_t * self_info)
         close(phase1_sfd_c);
         perror("client error : connect");
 		exit(-1);
-    }	
+    }
+	get_my_ip_or_port(phase1_sfd_c,self_info->ip,1);
+	get_my_ip_or_port(phase1_sfd_c,self_info->port,2);
+
 	
 	if (send(phase1_sfd_c, self_info->command,strlen(self_info->command),0)==-1)
     	perror("client error : send");
@@ -38,7 +40,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 
 	tok = strtok(buff,"#");
 	if(strcmp("Accepted",tok)!=0){
-		fprintf(stdout,"I am not Accepted, close sockfd and exit");
+		fprintf(stdout,"I was not Accepted, close sockfd and exit\n--------------------\n");
 		close(phase1_sfd_c);
 		exit(0);
 	}
@@ -94,7 +96,6 @@ void file_read_self_info(int type, int X, user_data_t * self_info)
 	fclose(fp);
 
 	sprintf (self_info->command, "Login#%s %s %s %s\n", self_info->type, self_info->name, self_info->password, self_info->account);
-	//"Login#type username password bankaccount"
 	fprintf(stdout, "command: %s\n",self_info->command);
 
 }
@@ -105,10 +106,11 @@ int get_peer_ip_or_port(int sockfd, char *dest, int type)
 	socklen_t len;
 	len = sizeof(peer_addr_info);
 	getpeername(sockfd, (struct sockaddr *)&peer_addr_info, &len);   //get ip and port info
+
 	if(type==1)
-		strcpy(dest,inet_ntoa(peer_addr_info.sin_addr)); //inet_ntoa return char*
+		inet_ntop(AF_INET, &peer_addr_info.sin_addr, dest, 17);
 	else if(type==2)
-		sprintf(dest, "%u", htons(peer_addr_info.sin_port));       //htons因为网络传送是低位先传送
+		sprintf(dest, "%u", ntohs(peer_addr_info.sin_port));       // from network byte order to host byte order.
 	else{
 		fprintf(stderr, "wrong type for peer ip or port\n");
 		exit(-1);
@@ -116,13 +118,22 @@ int get_peer_ip_or_port(int sockfd, char *dest, int type)
 	return 1;
 }
 
-int get_my_ip(int server_fd, char *dest)
+int get_my_ip_or_port(int s_fd, char *dest, int type)
 {
-    struct sockaddr_in server_info;
-    int namelen = sizeof(server_info);
-    getsockname(server_fd, (struct sockaddr *)&server_info, (socklen_t *)&namelen);
-	sprintf(dest,"%s",inet_ntoa(server_info.sin_addr));
-    printf("server ip: %s\n", inet_ntoa(server_info.sin_addr));
-	//printf("port: %d\n", ntohs(server.sin_port));
+    struct sockaddr_in my_addr_info;
+    socklen_t len = sizeof(my_addr_info);
+    getsockname(s_fd, (struct sockaddr *)&my_addr_info, &len);
+	if(type==1){
+		inet_ntop(AF_INET, &my_addr_info.sin_addr, dest, 17);
+    	fprintf(stdout, "my ip: %s\n", dest);
+	}
+	else if(type==2){
+		sprintf(dest, "%u", ntohs(my_addr_info.sin_port));
+		fprintf(stdout, "my port: %s\n", dest);  // it doesn't matter use ntoh or hton, the result is same!!!
+	}
+	else{
+		fprintf(stderr, "wrong type for peer ip or port\n");
+		exit(-1);	
+	}
 	return 1;
 }
