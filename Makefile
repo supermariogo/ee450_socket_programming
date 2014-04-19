@@ -16,7 +16,7 @@ seller:
 	gcc -DSELLERX=2 -DSERVERHOST=NUNKI -o seller2.o -g -Wall seller.c port.o -lpthread -lsocket -lnsl -lresolv
 
 port:
-	gcc -g -c -Wall -o port.o port.c lsocket -lnsl -lresolv 
+	gcc -g -c -Wall -o port.o port.c -lsocket -lnsl -lresolv 
 
 u: port_u server_u bidder_u seller_u 
 	@ echo "\n----------------*.txt--------------------\n"
