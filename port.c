@@ -13,7 +13,7 @@ void phase1_processing(int type, int X)
 
 	memset(&phase1_addr_info, 0, sizeof(phase1_addr_info)); 
     phase1_addr_info.sin_family = AF_INET;
-	inet_pton(AF_INET,LOCALHOST, &phase1_addr_info.sin_addr);
+	inet_pton(AF_INET,SERVERHOST, &phase1_addr_info.sin_addr);
     //phase1_addr_info.sin_addr.s_addr = htonl(INADDR_ANY); //use local address 
     phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); 
 
