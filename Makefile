@@ -5,7 +5,7 @@ nunki: port server bidder seller
 	@ ls *.o
 
 server: 
-	gcc -o server.o -g -Wall auctionserver.c
+	gcc -o server.o -g -Wall auctionserver.c -lpthread -lsocket -lnsl -lresolv 
 
 bidder: 
 	gcc -DBIDDERX=1 -DSERVERHOST=NUNKI -o bidder1.o -g -Wall bidder.c port.o -lpthread -lsocket -lnsl -lresolv
@@ -16,7 +16,7 @@ seller:
 	gcc -DSELLERX=2 -DSERVERHOST=NUNKI -o seller2.o -g -Wall seller.c port.o -lpthread -lsocket -lnsl -lresolv
 
 port:
-	gcc -g -DSERVERHOST=NUNKI -c -Wall -o port.o port.c -lsocket -lnsl -lresolv 
+	gcc -g -DSERVERHOST=NUNKI -c -Wall -o port.o port.c
 
 u: port_u server_u bidder_u seller_u 
 	@ echo "\n----------------*.txt--------------------\n"
