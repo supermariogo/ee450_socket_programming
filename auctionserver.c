@@ -61,27 +61,55 @@ static void * handle_request(void * argv)
  	int n = 0; 
  	memset(buff, 0, BUFFLEN);
 	int i;
-	//if(fcntl(s_c, F_GETFL) & O_NONBLOCK) {
-    // socket is non-blocking
-	//fprintf(stdout, "non blocking\n");
-	//} 	
- 	while (1) {
-		n = recv(s_c, buff, BUFFLEN, 0);
-		if (n > 0) 
- 			fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
-		else 
-			fprintf(stderr, "client disconnected\n");
-		i=phase1_login_check(buff);
-		get_peer_ip_or_port(s_c,user[i].ip,1);
-		get_peer_ip_or_port(s_c,user[i].port,2);
+	char command[256];
+	char myip[17];
+	
+	n = recv(s_c, buff, BUFFLEN, 0);
+	if (n > 0) 
+ 		fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+	else {
+		fprintf(stderr, "client disconnected, socket close thread exit\n");
+		close(s_c);
+		pthread_exit(NULL);
+	}
+	i=phase1_login_check(buff);
+	get_peer_ip_or_port(s_c,user[i].ip,1);
+	get_peer_ip_or_port(s_c,user[i].port,2);
+	
+	if(i==-1){
+		//authentication fail
+		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: reject\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);	
+		fprintf(stderr, "client disconnected, socket close thread exit\n");
+		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1)
+			perror("server error : send");
+		close(s_c);
+		pthread_exit(NULL);
 		
-		if(i==-1){
-			printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);	
-		}else{
-			user[i].authentication_success=1; 
-			printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);
+	}else{
+		user[i].authentication_success=1; 
+		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. Authorized: accept\n",i,user[i].name,user[i].password,user[i].account,user[i].ip);
+	}
+	
+
+	//authentication success
+	if(user[i].type[0]=='2'){
+		get_my_ip(s_c,myip);	
+		sprintf(command,"Accepted#%s#%d#",myip,SERVER_PHASE2_PORT);
+		if (send(s_c, command,strlen(command),0)==-1)
+			perror("server error : send");
+		else{
+			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to the Seller",myip,SERVER_PHASE2_PORT);
+			
 		}
- 	}
+	}else if(user[i].type[0]=='1'){
+		sprintf(command,"Accepted#");
+		if (send(s_c, command,strlen(command),0)==-1)
+			perror("server error : send");
+	}
+
+	fprintf(stdout, "phase1 complete\n-----------------------------\n");
+	close(s_c);
+	pthread_exit(NULL);
 	
  	return NULL;
 }
@@ -171,5 +199,16 @@ int get_peer_ip_or_port(int sockfd, char *dest, int type)
 	return 1;
 }
 
- 
+int get_my_ip(int server_fd, char *dest)
+{
+    struct sockaddr_in server_info;
+    int namelen = sizeof(server_info);
+    getsockname(server_fd, (struct sockaddr *)&server_info, (socklen_t *)&namelen);
+	sprintf(dest,"%s",inet_ntoa(server_info.sin_addr));
+    printf("server ip: %s\n", inet_ntoa(server_info.sin_addr));
+	//printf("port: %d\n", ntohs(server.sin_port));
+	return 1;
+}
 
+
+ 
