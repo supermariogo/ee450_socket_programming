@@ -142,8 +142,6 @@ SYNC:
 
 	close(s_c);
 	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
-	pthread_exit(NULL);
-		
  	return NULL;
 }
 
@@ -299,7 +297,6 @@ void * phase2_handle_request(void * argv)
 	fprintf(stdout, "list addres %d, get items from seller %s, he/she has %d items\n",(int)List, ((item_t *)(MyListFirst(List)->obj))->seller_name,MyListLength(List));
 	fprintf(stdout, "phase2 for seller %s complete\n-----------------------------\n", seller_name);
 	close(s_c);
-	
  	return (void *)List;  
 }
 
