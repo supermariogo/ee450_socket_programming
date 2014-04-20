@@ -66,4 +66,8 @@ run:
 	gnome-terminal -t "seller1" -x bash -c "./seller1.o;exec bash;" &
 	gnome-terminal -t "seller2" -x bash -c "./seller2.o;exec bash;" &
 	
-	
+run_users:
+	./bidder1.o &
+	./bidder2.o &	
+	./seller1.o &
+	./seller2.o &

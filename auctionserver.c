@@ -134,7 +134,7 @@ void * phase1_handle_request(void * argv)
 SYNC:
 	fprintf(stdout, "I am waiting for barrier sync\n");
 	pthread_barrier_wait(&barr);
-	if (send(s_c, "Ready",strlen("Ready#"),0)==-1) {
+	if (send(s_c, "Ready#",strlen("Ready#"),0)==-1) {
 		perror("server error : send");
 		close(s_c);
 		exit(-1);
@@ -217,42 +217,39 @@ void file_read_reg(void)
 
 void phase2_handle_connect(int phase2_s_s) 
 { 
-        int s_c; 
-        struct sockaddr_in from; 
-        socklen_t len = sizeof(from); 
-        pthread_t thread_do[6]; 
-		int phase2_thread_number=0;
-		int phase2_thread_max_number=0;
-		int i=0;
-		void *status[2];
-
-		for(i=0;i<10;i++){
-			if(user[i].type[0]=='2'&&user[i].authentication_success==1)
-				phase2_thread_max_number++;
+	int s_c; 
+	struct sockaddr_in from; 
+	socklen_t len = sizeof(from); 
+	pthread_t thread_do[6]; 
+	int phase2_thread_number=0;
+	int phase2_thread_max_number=0;
+	int i=0;
+	void *status[2];
+	
+	for(i=0;i<10;i++){
+		if(user[i].type[0]=='2'&&user[i].authentication_success==1)
+			phase2_thread_max_number++;
+	}
+	
+	while (1) 
+	{ 
+		s_c = accept(phase2_s_s, (struct sockaddr *)&from, &len); 
+		if (s_c > 0) 
+		{
+			pthread_create(&thread_do[phase2_thread_number], NULL, phase2_handle_request, (void *) &s_c);
+			fprintf(stdout, "server : thread %d created\n",(int)thread_do);
+			phase2_thread_number++;
 		}
-
-        while (1) 
-        { 
-                s_c = accept(phase2_s_s, (struct sockaddr *)&from, &len); 
-                if (s_c > 0) 
-                {
-					pthread_create(&thread_do[phase2_thread_number], NULL, phase2_handle_request, (void *) &s_c);
-					fprintf(stdout, "server : thread %d created\n",(int)thread_do);
-					phase2_thread_number++;
-                }
-				if(phase2_thread_number==phase2_thread_max_number){
-
-				for(i=0;i<phase2_thread_max_number;i++){
-							pthread_join(thread_do[i], &status[i]);// **=the address of pointer 
-							item_list[i]=(MyList *)status[i];
-							//fprintf(stdout, "list addres %d\n",(int)item_list[i]);
-						}
-				printf("End of Phase 2 for Auction Server\n");
-				fprintf(stdout, "--------------------------------------------\n");
-				return;
-				}
-
-        } 
+		if(phase2_thread_number==phase2_thread_max_number){
+			for(i=0;i<phase2_thread_max_number;i++){
+				pthread_join(thread_do[i], &status[i]);// **=the address of pointer 
+				item_list[i]=(MyList *)status[i];
+			}
+			printf("End of Phase 2 for Auction Server\n");
+			fprintf(stdout, "--------------------------------------------\n");
+			return;
+		}
+	} 
 } 
 
 void * phase2_handle_request(void * argv) 
@@ -300,7 +297,7 @@ void * phase2_handle_request(void * argv)
 	}
 	
 	fprintf(stdout, "list addres %d, get items from seller %s, he/she has %d items\n",(int)List, ((item_t *)(MyListFirst(List)->obj))->seller_name,MyListLength(List));
-	fprintf(stdout, "phase2 for this user complete\n-----------------------------\n");
+	fprintf(stdout, "phase2 for seller %s complete\n-----------------------------\n", seller_name);
 	close(s_c);
 	
  	return (void *)List;  
