@@ -132,9 +132,9 @@ void * phase1_handle_request(void * argv)
 			close(s_c);
 			exit(-1);
 		}
-		char myip[17];
-		get_my_ip_or_port(s_c,myip,1);
-		printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
+		//char myip[17];
+		//get_my_ip_or_port(s_c,myip,1);
+		//printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
 	}
 	
 
@@ -145,9 +145,9 @@ SYNC:
 		perror("server error : send");
 		close(s_c);
 		exit(-1);
-	} 
-	sleep(1);
-	close(s_c);
+	}
+	fprintf(stdout, "I have send Ready signal\n");
+	//close(s_c);
 	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
  	return NULL;
 }
