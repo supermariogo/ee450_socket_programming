@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
 {
 	file_read_self_info(2, SELLERX, &self_info);
 	phase1_processing(2, SELLERX, &self_info);
+	sleep(10);
 	phase2_processing(SELLERX);
 
 	return 0;

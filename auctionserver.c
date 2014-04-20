@@ -57,7 +57,7 @@ void phase1_handle_connect(int phase1_s_s)
 	if(pthread_barrier_init(&barr, NULL, 4))
 	    {
 	        printf("Could not create a barrier\n");
-	        return -1;
+	        return ;
 	    }
 	int s_c; 
 	struct sockaddr_in from; 
@@ -150,19 +150,19 @@ void * phase1_handle_request(void * argv)
 		}
 	}
 	else {
-		fprintf(stderr, "ivalid error,quit\n");
+		fprintf(stderr, "ivalid type,quit\n");
 		exit(0);
 	}
-	fprintf(stdout, "whil to get 4 threads\n");
 	
-	//while(phase1_thread_max_number!=4);
-	//send(s_c, "Ready",strlen("Ready"),0);
-	
-	fprintf(stdout, "phase1 for this user complete\n-----------------------------\n");
+	//pthread_barrier_wait(&barr);
+	//if(user[i].type[0]=='2')
+	//	send(s_c, "Ready",strlen("Ready"),0);
+
 	close(s_c);
+	fprintf(stdout, "phase1 for this user complete\n-----------------------------\n");
 	pthread_exit(NULL);
 	
-	pthread_barrier_wait(&barr);	
+		
  	return NULL;
 }
 

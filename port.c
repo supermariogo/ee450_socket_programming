@@ -55,20 +55,20 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		fprintf(stdout, "self_info->next_phase_port=%s\n",self_info->next_phase_port);
 
 		//upon receive "Ready"
-		memset(buff, 0, BUFFLEN);
-		n = recv(s_c, buff, BUFFLEN, 0);
-		if (n > 0) 
- 			fprintf(stdout, "ready signal:%s\n",buff);
-		else {
-			fprintf(stderr, "client disconnected, socket close thread exit\n");
-			close(s_c);
-			exit(-1);
-		}
+		//memset(buff, 0, BUFFLEN);
+		//n = recv(s_c, buff, BUFFLEN, 0);
+		//if (n > 0) 
+ 		//	fprintf(stdout, "ready signal:%s\n",buff);
+		//else {
+		//	fprintf(stderr, "client disconnected, socket close thread exit\n");
+		//	close(s_c);
+		//	exit(-1);
+		//}
 
-		if(strcmp(buff,"Ready")!=0){
-			fprintf(stderr, "invalid Ready command\n");
-			exit(-1);	
-		}
+		//if(strcmp(buff,"Ready")!=0){
+		//	fprintf(stderr, "invalid Ready command\n");
+		//	exit(-1);	
+		//}
 
 	}
 	
