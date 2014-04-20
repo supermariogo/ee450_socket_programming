@@ -39,6 +39,12 @@ typedef struct tag_user_data {
 
 } user_data_t;
 
+typedef struct tag_item {
+    char seller_name[32];
+	char item_name[32];
+	int price;
+} item_t;
+
 extern void phase1_processing(int type, int X, user_data_t * self_info);
 extern void file_read_self_info(int type, int X, user_data_t * self_info);
 

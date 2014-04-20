@@ -1,4 +1,4 @@
-nunki: port server bidder seller 
+nunki: MyList port server bidder seller 
 	@ echo "\n----------------*.txt--------------------\n"
 	@ ls *.txt
 	@ echo "\n----------------*.o--------------------\n"
@@ -6,7 +6,7 @@ nunki: port server bidder seller
 port:
 	gcc port.c -o port.o -DSERVERHOST=NUNKI -g -c -Wall
 server: 
-	gcc auctionserver.c port.o -o server.o -g -Wall -lpthread -lsocket -lnsl -lresolv 
+	gcc auctionserver.c port.o MyList.o -o server.o -g -Wall -lpthread -lsocket -lnsl -lresolv 
 
 bidder: 
 	gcc bidder.c port.o -o bidder1.o -DBIDDERX=1 -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv
@@ -16,7 +16,7 @@ seller:
 	gcc seller.c port.o -o seller1.o -DSELLERX=1 -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv
 	gcc seller.c port.o -o seller2.o -DSELLERX=2 -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv
 
-u: port_u server_u bidder_u seller_u 
+u: MyList port_u server_u bidder_u seller_u 
 	@ echo "\n----------------*.txt--------------------\n"
 	@ ls *.txt
 	@ echo "\n----------------*.o--------------------\n"
@@ -25,7 +25,7 @@ port_u:
 	gcc port.c -o port.o -DSERVERHOST=LOCALHOST -g -c -Wall
 
 server_u: 
-	gcc auctionserver.c port.o -o server.o -g -Wall -lpthread  
+	gcc auctionserver.c MyList.o port.o -o server.o -g -Wall -lpthread  
 
 bidder_u: 
 	gcc bidder.c  port.o -o bidder1.o -DBIDDERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
@@ -34,6 +34,9 @@ bidder_u:
 seller_u: 
 	gcc seller.c  port.o -o seller1.o -DSELLERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
 	gcc seller.c  port.o -o seller2.o -DSELLERX=2 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
+
+MyList:
+	gcc MyList.c -o MyList.o -g -c -Wall
 
 clean:
 	rm -f *.o *~ *.out *.so
@@ -55,5 +58,12 @@ cat2:
 	cat bidding1.txt
 	@echo "------------------------bidder2 bidding----------------------------"
 	cat bidding2.txt
+
+run:
+	gnome-terminal -t "server" -x bash -c "./server.o;exec bash;" &		
+	gnome-terminal -t "bidder1" -x bash -c "./bidder1.o;exec bash;" &
+	gnome-terminal -t "bidder2" -x bash -c "./bidder2.o;exec bash;" &
+	gnome-terminal -t "seller1" -x bash -c "./seller1.o;exec bash;" &
+	gnome-terminal -t "seller2" -x bash -c "./seller2.o;exec bash;" &
 	
 	
