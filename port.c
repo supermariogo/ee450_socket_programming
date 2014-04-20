@@ -39,42 +39,32 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	}
 
 	tok = strtok(buff,"#");
-	if(strcmp("Accepted",tok)!=0){
-		fprintf(stdout,"I was not Accepted, close sockfd and exit\n--------------------\n");
+	if(strcmp("Accepted",tok)!=0)
+		fprintf(stdout,"I was Rejected--------------------\n");
+	else
+		fprintf(stdout,"I was Accpted---------------------\n");
+
+	//upon receive "Ready" to sync 4 threads
+	memset(buff, 0, BUFFLEN);
+	fprintf(stdout, "I am waiting for Ready signal to continue\n");
+	n = recv(s_c, buff, BUFFLEN, 0);
+	if (n > 0) 
+		fprintf(stdout, "Get ready signal:%s\n",buff);
+	else {
+		fprintf(stderr, "client disconnected, socket close thread exit\n");
 		close(s_c);
-		exit(0);
+		exit(-1);
 	}
-	if(type==2){
-		//seller needs this info
-		tok = strtok(NULL, "#");
-		strcpy(self_info->next_phase_ip,tok);
-		tok = strtok(NULL, "#");
-		strcpy(self_info->next_phase_port,tok);
 
-		fprintf(stdout, "self_info->next_phase_ip=%s\n",self_info->next_phase_ip);
-		fprintf(stdout, "self_info->next_phase_port=%s\n",self_info->next_phase_port);
-
-		//upon receive "Ready"
-		//memset(buff, 0, BUFFLEN);
-		//n = recv(s_c, buff, BUFFLEN, 0);
-		//if (n > 0) 
- 		//	fprintf(stdout, "ready signal:%s\n",buff);
-		//else {
-		//	fprintf(stderr, "client disconnected, socket close thread exit\n");
-		//	close(s_c);
-		//	exit(-1);
-		//}
-
-		//if(strcmp(buff,"Ready")!=0){
-		//	fprintf(stderr, "invalid Ready command\n");
-		//	exit(-1);	
-		//}
-
+	if(strcmp(buff,"Ready#")!=0){
+		fprintf(stderr, "invalid Ready command\n");
+		exit(-1);	
 	}
 	
-	fprintf(stdout, "I was accpted, begin phase2?\n");
-	fprintf(stdout, "----------------------------------------\n");
+	fprintf(stdout, "Phase1 complete!\nI will sleep for 2s----------------------\n");
+	sleep(2);
 	close(s_c);
+
 }
 void file_read_self_info(int type, int X, user_data_t * self_info)
 {

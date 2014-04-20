@@ -54,11 +54,10 @@ int socket_bind_listen(uint16_t PORT){
 } 
 void phase1_handle_connect(int phase1_s_s) 
 { 
-	if(pthread_barrier_init(&barr, NULL, 4))
-	    {
-	        printf("Could not create a barrier\n");
-	        return ;
-	    }
+	if(pthread_barrier_init(&barr, NULL, 4)){
+	    printf("Could not create a barrier\n");
+	    return ;
+	}
 	int s_c; 
 	struct sockaddr_in from; 
 	socklen_t len = sizeof(from); 
@@ -71,7 +70,6 @@ void phase1_handle_connect(int phase1_s_s)
 				pthread_create(&thread_do[phase1_thread_max_number], NULL, phase1_handle_request, (void *) &s_c);
 				fprintf(stdout, "server : thread %d created\n",(int)thread_do);
 				phase1_thread_max_number++;
-				//ptherad_join() is set as default
 	        }
 			if(phase1_thread_max_number==4){
 				pthread_join(thread_do[0], NULL);	
@@ -82,7 +80,6 @@ void phase1_handle_connect(int phase1_s_s)
 				fprintf(stdout, "--------------------------------------------\n");
 				return;
 			}
-	
 	} 
 } 
 
@@ -90,13 +87,11 @@ void * phase1_handle_request(void * argv)
 { 
 	int s_c = * ((int *) argv); 
  	char buff[BUFFLEN]; 
- 	int n = 0; 
- 	memset(buff, 0, BUFFLEN);
-	int i;
-	char command[256];
-	char myip[17];
 	user_data_t un_auth_user;
+ 	int n = 0; 
+	int i = 0;
 	
+	memset(buff, 0, BUFFLEN);	
 	n = recv(s_c, buff, BUFFLEN, 0);
 	if (n > 0) 
  		fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
@@ -115,10 +110,12 @@ void * phase1_handle_request(void * argv)
 		fprintf(stdout, "User Port %s ",un_auth_user.port);
 		printf("Authorized: reject\n");
 		fprintf(stdout, "------------------------------------------\n");
-		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1)
+		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1){
 			perror("server error : send");
-		close(s_c);
-		pthread_exit(NULL);
+			close(s_c);
+			exit(-1);
+		}
+		goto SYNC;
 	}else{ //authentication accept 
 		user[i].authentication_success=1;
 		get_peer_ip_or_port(s_c,user[i].ip,1);
@@ -126,42 +123,26 @@ void * phase1_handle_request(void * argv)
 		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,user[i].name,user[i].password,user[i].account,user[i].ip);
 		fprintf(stdout, "User Port %s ",user[i].port);	
 		printf("Authorized: accept\n");
-	}
-	
-	//authentication accept
-	if(user[i].type[0]=='1'){
-		sprintf(command,"Accepted#");
-		if (send(s_c, command,strlen(command),0)==-1){
+		if (send(s_c, "Accepted#",strlen("Accepted#"),0)==-1){
 			perror("server error : send");
 			close(s_c);
-			pthread_exit(NULL);
+			exit(-1);
 		}
-	}
-	else if(user[i].type[0]=='2'){
-		get_my_ip_or_port(s_c, myip, 1);	
-		sprintf(command,"Accepted#%s#%d#",myip,SERVER_PHASE2_PORT);
-		if (send(s_c, command,strlen(command),0)==-1){
-			perror("server error : send");
-			close(s_c);
-			pthread_exit(NULL);
-		}
-		else{
-			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to the Seller\n",myip,SERVER_PHASE2_PORT);
-		}
-	}
-	else {
-		fprintf(stderr, "ivalid type,quit\n");
-		exit(0);
 	}
 	
-	//pthread_barrier_wait(&barr);
-	//if(user[i].type[0]=='2')
-	//	send(s_c, "Ready",strlen("Ready"),0);
+
+SYNC:
+	fprintf(stdout, "I am waiting for barrier sync\n");
+	pthread_barrier_wait(&barr);
+	if (send(s_c, "Ready",strlen("Ready#"),0)==-1) {
+		perror("server error : send");
+		close(s_c);
+		exit(-1);
+	} 
 
 	close(s_c);
-	fprintf(stdout, "phase1 for this user complete\n-----------------------------\n");
+	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
 	pthread_exit(NULL);
-	
 		
  	return NULL;
 }
@@ -298,7 +279,6 @@ void * phase2_handle_request(void * argv)
 	}
 
 	tok = strtok(buff,"#");
-	fprintf(stdout,"%s\n",tok);
 	if(strcmp(tok,"Items")!=0){
 		fprintf(stderr, "invalid Items command\n");
 		pthread_exit(NULL);	
