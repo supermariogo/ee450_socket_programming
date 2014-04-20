@@ -3,7 +3,7 @@
 
 void phase1_processing(int type, int X, user_data_t * self_info)
 {
-	int phase1_sfd_c; //socket fd 
+	int s_c; //socket fd 
 	struct sockaddr_in phase1_addr_info; // connect info
 	char buff[BUFFLEN]="";
 	int n;
@@ -16,32 +16,32 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 
 	fprintf(stdout, "Hello, I am type%d(1bidder 2seller) #%d\n",type, X);
 
-	phase1_sfd_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
-    if (connect(phase1_sfd_c, (struct sockaddr *) &phase1_addr_info, sizeof(phase1_addr_info)) == -1) {
-        close(phase1_sfd_c);
+	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
+    if (connect(s_c, (struct sockaddr *) &phase1_addr_info, sizeof(phase1_addr_info)) == -1) {
+        close(s_c);
         perror("client error : connect");
 		exit(-1);
     }
-	get_my_ip_or_port(phase1_sfd_c,self_info->ip,1);
-	get_my_ip_or_port(phase1_sfd_c,self_info->port,2);
+	get_my_ip_or_port(s_c,self_info->ip,1);
+	get_my_ip_or_port(s_c,self_info->port,2);
 
 	
-	if (send(phase1_sfd_c, self_info->command,strlen(self_info->command),0)==-1)
+	if (send(s_c, self_info->command,strlen(self_info->command),0)==-1)
     	perror("client error : send");
 
-	n = recv(phase1_sfd_c, buff, BUFFLEN, 0);
+	n = recv(s_c, buff, BUFFLEN, 0);
 	if (n > 0) 
 		fprintf(stdout, "client : message from server %s\n",buff);
 	else {
 		fprintf(stderr, "client : server disconnected, socket close thread exit\n");
-		close(phase1_sfd_c);
+		close(s_c);
 		exit(0);
 	}
 
 	tok = strtok(buff,"#");
 	if(strcmp("Accepted",tok)!=0){
 		fprintf(stdout,"I was not Accepted, close sockfd and exit\n--------------------\n");
-		close(phase1_sfd_c);
+		close(s_c);
 		exit(0);
 	}
 	if(type==2){
@@ -52,11 +52,29 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		strcpy(self_info->next_phase_port,tok);
 
 		fprintf(stdout, "self_info->next_phase_ip=%s\n",self_info->next_phase_ip);
-		fprintf(stdout, "self_info->next_phase_port=%s\n",self_info->next_phase_port);	
+		fprintf(stdout, "self_info->next_phase_port=%s\n",self_info->next_phase_port);
+
+		//upon receive "Ready"
+		memset(buff, 0, BUFFLEN);
+		n = recv(s_c, buff, BUFFLEN, 0);
+		if (n > 0) 
+ 			fprintf(stdout, "ready signal:%s\n",buff);
+		else {
+			fprintf(stderr, "client disconnected, socket close thread exit\n");
+			close(s_c);
+			exit(-1);
+		}
+
+		if(strcmp(buff,"Ready")!=0){
+			fprintf(stderr, "invalid Ready command\n");
+			exit(-1);	
+		}
+
 	}
-	close(phase1_sfd_c);
+	
 	fprintf(stdout, "I was accpted, begin phase2?\n");
 	fprintf(stdout, "----------------------------------------\n");
+	close(s_c);
 }
 void file_read_self_info(int type, int X, user_data_t * self_info)
 {

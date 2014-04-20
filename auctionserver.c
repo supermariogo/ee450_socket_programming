@@ -3,9 +3,10 @@
 #include "auctionserver.h"
 user_data_t user[10];
 int user_number=0; // count from zero, valid user, success = 1
-int seller_number=0;
-int bidder_number=0;
+int phase1_thread_max_number=0;
+int phase2_thread_max_number=0;
 MyList * item_list[2];
+pthread_barrier_t barr;
 
 int main(int argc, char * argv[]) 
 { 
@@ -53,33 +54,36 @@ int socket_bind_listen(uint16_t PORT){
 } 
 void phase1_handle_connect(int phase1_s_s) 
 { 
-        int s_c; 
-        struct sockaddr_in from; 
-        socklen_t len = sizeof(from); 
-        pthread_t thread_do[4]; 
-		int phase1_thread_number=0;
-
-        while (1) 
-        { 
-                s_c = accept(phase1_s_s, (struct sockaddr *) &from, &len); 
-                if (s_c > 0) 
-                {
-					pthread_create(&thread_do[phase1_thread_number], NULL, phase1_handle_request, (void *) &s_c);
-					fprintf(stdout, "server : thread %d created\n",(int)thread_do);
-					phase1_thread_number++;
-					//ptherad_join() is set as default
-                }
-				if(phase1_thread_number==4){
-					pthread_join(thread_do[0], NULL);	
-					pthread_join(thread_do[1], NULL);
-					pthread_join(thread_do[2], NULL);
-					pthread_join(thread_do[3], NULL);
-					printf("End of Phase 1 for Auction Server\n");
-					fprintf(stdout, "--------------------------------------------\n");
-					return;
-				}
-
-        } 
+	if(pthread_barrier_init(&barr, NULL, 4))
+	    {
+	        printf("Could not create a barrier\n");
+	        return -1;
+	    }
+	int s_c; 
+	struct sockaddr_in from; 
+	socklen_t len = sizeof(from); 
+	pthread_t thread_do[4]; 
+	while (1) 
+	{ 
+	        s_c = accept(phase1_s_s, (struct sockaddr *) &from, &len); 
+	        if (s_c > 0) 
+	        {
+				pthread_create(&thread_do[phase1_thread_max_number], NULL, phase1_handle_request, (void *) &s_c);
+				fprintf(stdout, "server : thread %d created\n",(int)thread_do);
+				phase1_thread_max_number++;
+				//ptherad_join() is set as default
+	        }
+			if(phase1_thread_max_number==4){
+				pthread_join(thread_do[0], NULL);	
+				pthread_join(thread_do[1], NULL);
+				pthread_join(thread_do[2], NULL);
+				pthread_join(thread_do[3], NULL);
+				printf("End of Phase 1 for Auction Server\n");
+				fprintf(stdout, "--------------------------------------------\n");
+				return;
+			}
+	
+	} 
 } 
 
 void * phase1_handle_request(void * argv) 
@@ -149,11 +153,16 @@ void * phase1_handle_request(void * argv)
 		fprintf(stderr, "ivalid error,quit\n");
 		exit(0);
 	}
-
+	fprintf(stdout, "whil to get 4 threads\n");
+	
+	//while(phase1_thread_max_number!=4);
+	//send(s_c, "Ready",strlen("Ready"),0);
+	
 	fprintf(stdout, "phase1 for this user complete\n-----------------------------\n");
 	close(s_c);
 	pthread_exit(NULL);
 	
+	pthread_barrier_wait(&barr);	
  	return NULL;
 }
 
@@ -255,8 +264,7 @@ void phase2_handle_connect(int phase2_s_s)
 				for(i=0;i<phase2_thread_max_number;i++){
 							pthread_join(thread_do[i], &status[i]);// **=the address of pointer 
 							item_list[i]=(MyList *)status[i];
-							fprintf(stdout, "list addres %d\n",(int)item_list[i]);
-	
+							//fprintf(stdout, "list addres %d\n",(int)item_list[i]);
 						}
 				printf("End of Phase 2 for Auction Server\n");
 				fprintf(stdout, "--------------------------------------------\n");
@@ -276,8 +284,9 @@ void * phase2_handle_request(void * argv)
 	int item_num=0;
 	char seller_name[32];
 	item_t* item=NULL;
-	MyList* List=NULL;
-
+	MyList* List=(MyList*)malloc(sizeof(MyList));
+	MyListInit(List);
+	// begin to receive itemlists	
 	memset(buff, 0, BUFFLEN);
 	n = recv(s_c, buff, BUFFLEN, 0);
 	if (n > 0) 
@@ -288,23 +297,24 @@ void * phase2_handle_request(void * argv)
 		pthread_exit(NULL);
 	}
 
-	fprintf(stdout, "string before strtok(): %s\n", buff);
 	tok = strtok(buff,"#");
+	fprintf(stdout,"%s\n",tok);
 	if(strcmp(tok,"Items")!=0){
 		fprintf(stderr, "invalid Items command\n");
 		pthread_exit(NULL);	
 	}
-	tok = strtok(NULL, "# /n");
-	strcpy(seller_name,tok); // get seller name
-	tok = strtok(NULL, "# /n");
+	tok = strtok(NULL, "# \n");
 	item_num=atoi(tok);  // get items number
+	tok = strtok(NULL, "# \n");
+	strcpy(seller_name,tok); // get seller name
+	
 
 	for(i=0;i<item_num;i++){
 		item=(item_t*)malloc(sizeof(item_t));
-		tok = strtok(NULL, "# /n");
+		tok = strtok(NULL, "# \n");
 		strcpy(item->item_name,tok); // get item name
-		tok = strtok(NULL, "# /n");
-		item->price=atoi(tok);  // get item number
+		tok = strtok(NULL, "# \n");
+		item->price=atoi(tok);  // get item price
 		strcpy(item->seller_name,seller_name); //get seller name
 		MyListAppend(List, (void*)item);
 	}
