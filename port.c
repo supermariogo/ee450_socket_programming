@@ -51,7 +51,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	if (n > 0) 
 		fprintf(stdout, "Get ready signal:%s\n",buff);
 	else {
-		fprintf(stderr, "client disconnected, socket close thread exit\n");
+		fprintf(stderr, "server close connection! No ready signal!\n");
 		close(s_c);
 		exit(-1);
 	}

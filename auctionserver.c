@@ -49,6 +49,10 @@ int socket_bind_listen(uint16_t PORT){
 		exit(1);
 	}
 	fprintf(stdout, "server : begin to listen\n");
+	if(PORT==SERVER_PHASE1_PORT)
+		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
+	else if(PORT==SERVER_PHASE2_PORT)
+		printf("Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
 	return s_s;
 
 } 
@@ -128,6 +132,9 @@ void * phase1_handle_request(void * argv)
 			close(s_c);
 			exit(-1);
 		}
+		char myip[17];
+		get_my_ip_or_port(s_c,myip,1);
+		printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
 	}
 	
 
@@ -139,7 +146,7 @@ SYNC:
 		close(s_c);
 		exit(-1);
 	} 
-
+	sleep(1);
 	close(s_c);
 	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
  	return NULL;
@@ -190,9 +197,9 @@ void file_read_reg(void)
 	char current_line[1024];
 	char *tok = NULL;
 	int i=0;
+	fprintf(stdout,"----------Loading Registration file-------------------\n");
 	while (fgets(current_line, 1024, fp)!=NULL ){
 
-		fprintf(stdout, "string before strtok(): %s\n", current_line);
 		tok = strtok(current_line," ");
 		strcpy(user[i].name,tok);
 		tok = strtok(NULL, " ");
@@ -200,14 +207,14 @@ void file_read_reg(void)
 		tok = strtok(NULL, " \n");
 		strcpy(user[i].account,tok);
 
-		fprintf(stdout, "user.name=%s\n",user[i].name);
-		fprintf(stdout, "user.password=%s\n",user[i].password);
-		fprintf(stdout, "user.account=%s\n",user[i].account);
+		fprintf(stdout, "name=%s ",user[i].name);
+		fprintf(stdout, "password=%s ",user[i].password);
+		fprintf(stdout, "account=%s \n",user[i].account);
 		
 		i++;
 	}
 	user_number=i;// count from zero
-	fprintf(stdout, "user_number=%d\n",user_number);
+	fprintf(stdout,"----------%d users in Registration file---------------\n\n",user_number);
 	fclose(fp);
 
 }
@@ -282,7 +289,8 @@ void * phase2_handle_request(void * argv)
 	item_num=atoi(tok);  // get items number
 	tok = strtok(NULL, "# \n");
 	strcpy(seller_name,tok); // get seller name
-	
+	printf("Phase2: Seller %s send item lists\n", seller_name);
+	printf("Phase2: (Received Item list display here)\n%s",tok);
 
 	for(i=0;i<item_num;i++){
 		item=(item_t*)malloc(sizeof(item_t));
