@@ -113,7 +113,6 @@ void * phase1_handle_request(void * argv)
 		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,un_auth_user.name,un_auth_user.password,un_auth_user.account,un_auth_user.ip);
 		fprintf(stdout, "User Port %s ",un_auth_user.port);
 		printf("Authorized: reject\n");
-		fprintf(stdout, "------------------------------------------\n");
 		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1){
 			perror("server error : send");
 			close(s_c);
@@ -135,7 +134,7 @@ void * phase1_handle_request(void * argv)
 		char myip[17];
 		if(user[i].type[0]=='2'){
 			get_my_ip_or_port(s_c,myip,1);
-			fprintf(stdout,"My type is %s",user[i].type);
+			fprintf(stdout,"My type is %c",user[i].type[0]);
 			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
 		}
 	}
