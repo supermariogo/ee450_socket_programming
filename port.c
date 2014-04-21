@@ -44,7 +44,10 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	else
 		fprintf(stdout,"I was Accpted---------------------\n");
 
-	//upon receive "Ready" to sync 4 threads
+	//upon receive "Ready" to sync 4 threads  ask "Ready?" 
+	if (send(s_c, "Ready?",strlen("Ready?"),0)==-1)
+		perror("client error : send");
+
 	memset(buff, 0, BUFFLEN);
 	fprintf(stdout, "I am waiting for Ready signal to continue\n");
 	n = recv(s_c, buff, BUFFLEN, 0);
@@ -61,8 +64,8 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		exit(-1);	
 	}
 	
-	fprintf(stdout, "Phase1 complete!\nI will sleep for 2s----------------------\n");
-	sleep(2);
+	fprintf(stdout, "Phase1 complete!\nI will sleep for 1s to let server create next socket----------------------\n");
+	sleep(1);
 	close(s_c);
 
 }

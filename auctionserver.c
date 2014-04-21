@@ -132,22 +132,34 @@ void * phase1_handle_request(void * argv)
 			close(s_c);
 			exit(-1);
 		}
-		//char myip[17];
-		//get_my_ip_or_port(s_c,myip,1);
-		//printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
+		char myip[17];
+		if(user[i].type[0]=='2'){
+			get_my_ip_or_port(s_c,myip,1);
+			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
+		}
 	}
 	
 
 SYNC:
 	fprintf(stdout, "I am waiting for barrier sync\n");
 	pthread_barrier_wait(&barr);
-	if (send(s_c, "Ready#",strlen("Ready#"),0)==-1) {
+	memset(buff, 0, BUFFLEN);	
+	n = recv(s_c, buff, BUFFLEN, 0);// this should Ready?
+	if (n <= 0){ 
+		fprintf(stderr, "client disconnected, socket close thread exit\n");
+		close(s_c);
+		pthread_exit(NULL);
+	}else{
+		fprintf(stdout, "I recived %s\n",buff);	
+	}// this should "Ready?" 
+
+	if (send(s_c, "Ready#",strlen("Ready#"),0)==-1){
 		perror("server error : send");
 		close(s_c);
 		exit(-1);
 	}
 	fprintf(stdout, "I have send Ready signal\n");
-	//close(s_c);
+	close(s_c);
 	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
  	return NULL;
 }
@@ -290,7 +302,7 @@ void * phase2_handle_request(void * argv)
 	tok = strtok(NULL, "# \n");
 	strcpy(seller_name,tok); // get seller name
 	printf("Phase2: Seller %s send item lists\n", seller_name);
-	printf("Phase2: (Received Item list display here)\n%s",tok);
+	printf("Phase2: (Received Item list display here)\n%s\n",tok+strlen(tok)+1);
 
 	for(i=0;i<item_num;i++){
 		item=(item_t*)malloc(sizeof(item_t));
