@@ -29,12 +29,19 @@ int main(int argc, char * argv[])
 	close(phase2_s_s);
 
 	char file_content[4096];
+	char file_content2[4096];
+	//read boradcast.txt to file_content
 	phase3_read_broadcast_file(file_content); 
-	//read boradcast.txt and malloc intem_array
-	phase3_to_bidder(file_content); 
-	//send broadcastList and get reply and store bidder's info
-	phase3_file_to_list(file_content,item_num,item_array);
-	//strtok destory file_content
+	
+	strcpy(file_content2, file_content);
+	
+	//malloc for item arrary; destory file_content; store it to item_array
+	item_array=phase3_file_to_list(file_content,item_num);
+	
+	//send broadcastList and get reply and store bidder's info	
+	phase3_to_bidder(file_content2); 
+	
+	
 	
 	//phase3_announce();
 

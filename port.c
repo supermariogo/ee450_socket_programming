@@ -150,14 +150,13 @@ int get_my_ip_or_port(int s_fd, char *dest, int type)
 }
 
 
-void phase3_file_to_list(char * file_content, int num, item_t * array)
+item_t * phase3_file_to_list(char * file_content, int num)
 {
 	char * tok=NULL;
 	int i=0;
-	array=(item_t*)malloc(sizeof(item_t)*num);
-	fprintf(stderr,"array address:%d\n",array);
-	memset((char*)&array, 0, sizeof(item_t)*num);
-	fprintf(stdout, "the file going to strtok is:%s\n",file_content);
+	item_t * array=(item_t*)malloc(num*sizeof(item_t));
+	memset((char*)&array, 0, num*sizeof(item_t));
+	fprintf(stdout, "the file %d going to strtok is:%s\n",file_content,file_content);
 
 	for(i=0;i<num;i++){
 		
@@ -165,20 +164,17 @@ void phase3_file_to_list(char * file_content, int num, item_t * array)
 			tok = strtok(file_content, " \n");
 		else
 			tok = strtok(NULL, " \n");
-		strcpy( array->seller_name, tok);
-fprintf(stdout, "tok is:%s\n sizeof(array)=%d\n sellername=%d\n",tok, sizeof(array),array->seller_name);
-
 		strcpy(array[i].seller_name,tok); // get seller name
-fprintf(stdout, "here ?tok is:%s\n",tok);
+		fprintf(stdout, "here ?tok is:%s\n",tok);
 
 		tok = strtok(NULL, " \n");
-fprintf(stdout, "tok is:%s\n",tok);
+		fprintf(stdout, "tok is:%s\n",tok);
 		strcpy(array[i].item_name,tok); // get item name
 
 		tok = strtok(NULL, " \n");
-fprintf(stdout, "tok is:%s\n",tok);
+		fprintf(stdout, "tok is:%s\n",tok);
 		array[i].price=atoi(tok);  // get item price
 	}
-
+	return array;
 }
 

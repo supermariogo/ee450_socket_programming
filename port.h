@@ -55,5 +55,5 @@ extern void file_read_self_info(int type, int X, user_data_t * self_info);
 extern int get_peer_ip_or_port(int sockfd, char *dest, int type);
 extern int get_my_ip_or_port(int server_fd, char *dest, int type);
 
-extern void phase3_file_to_list(char * file_content, int num, item_t * array);
+extern item_t * phase3_file_to_list(char * file_content, int num);
 
