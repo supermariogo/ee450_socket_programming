@@ -135,6 +135,7 @@ void * phase1_handle_request(void * argv)
 		char myip[17];
 		if(user[i].type[0]=='2'){
 			get_my_ip_or_port(s_c,myip,1);
+			fprintf(stdout,"My type is %s",user[i].type);
 			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
 		}
 	}
