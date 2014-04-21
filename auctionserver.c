@@ -4,8 +4,12 @@
 user_data_t user[10];
 int user_number=0; // count from zero, valid user, success = 1
 int phase1_thread_max_number=0;
-int phase2_thread_max_number=0;
+int phase2_thread_max_number=0; //seller number
 MyList * item_list[2];
+
+item_t *item_array;
+int item_num=0;
+
 pthread_barrier_t barr;
 
 int main(int argc, char * argv[]) 
@@ -23,6 +27,16 @@ int main(int argc, char * argv[])
 	phase2_s_s=socket_bind_listen(SERVER_PHASE2_PORT);
 	phase2_handle_connect(phase2_s_s);
 	close(phase2_s_s);
+
+	char file_content[4096];
+	phase3_read_broadcast_file(file_content); 
+	//read boradcast.txt and malloc intem_array
+	phase3_to_bidder(file_content); 
+	//send broadcastList and get reply and store bidder's info
+	phase3_file_to_list(file_content,item_num,item_array);
+	//strtok destory file_content
+	
+	//phase3_announce();
 
 	return 0; 
 }
@@ -321,3 +335,75 @@ void * phase2_handle_request(void * argv)
 }
 
 
+void phase3_read_broadcast_file(char * file_content)
+{
+// read file to file_content
+	FILE * fp;
+	long file_size;
+	int line_number=0;
+	char current_line[1024];
+	fp = fopen ("broadcastList.txt","r"); 
+	while (fgets(current_line, 1024, fp)!=NULL ){
+		line_number++;
+	}
+	item_num=line_number;
+	file_size = ftell(fp);
+	rewind(fp);
+	fread(file_content,sizeof(char),file_size,fp);
+	fclose(fp);
+	fprintf(stdout, "broadcastList:%s\n",file_content);
+	
+}
+
+void phase3_to_bidder(char *file_content)
+{
+	int s_c;
+	struct sockaddr_in servaddr;    /* server address */
+	char buff[BUFFLEN];
+	socklen_t addrlen;
+	int recvlen;
+	char *tok=NULL;
+	char bidder_name[32];
+	int i,j;
+	addrlen=sizeof(servaddr);
+	char message[4096];
+
+	for(i=0;i<2;i++){
+		memset((char*)&servaddr, 0, sizeof(servaddr));
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(BIDDER1_PHASE3_PORT+i*100);
+		inet_pton(AF_INET, LOCALHOST, &servaddr.sin_addr);
+	
+		if ((s_c = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+			perror("cannot create socket for bidder \n");
+			return;
+		}
+	
+		/* send a message to the bidderi */
+		sprintf(message,"%d#%s",item_num,file_content);
+		if (sendto(s_c,message, strlen(message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+			perror("sendto failed");
+			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
+		}
+		/* get reply from bidderi */
+		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
+		if (recvlen > 0) {
+		    fprintf(stdout,"received message:%s\n", buff);
+		}else{
+			fprintf(stderr, "recvfrom error\n");
+		}
+		//  buff=name#20#30#40
+		tok = strtok(buff, "#\n");
+		strcpy(bidder_name, tok);
+		for(j=0;j<item_num;j++){
+			tok = strtok(NULL, "#\n");
+			item_array[j].bidder_price[i]=atoi(tok);  // get bidder price
+			strcpy(item_array[j].bidder_name[i],bidder_name); // get bidder_name
+		}
+	}
+}
+
+//void phase3_file_to_list(char * file_content, int num, item_t * array)
+	//phase3_announce();
+
+	

@@ -4,6 +4,8 @@
 #define NUNKI "68.181.201.3" 
 #define SERVER_PHASE1_PORT 2039
 #define SERVER_PHASE2_PORT 2139
+#define BIDDER1_PHASE3_PORT 4039
+#define BIDDER2_PHASE3_PORT 4139
 #define BUFFLEN 1024
 #define BACKLOG 10     // how many pending connections queue will hold
 #endif
@@ -43,6 +45,8 @@ typedef struct tag_item {
     char seller_name[32];
 	char item_name[32];
 	int price;
+	char bidder_name[2][32];
+	int  bidder_price[2];
 } item_t;
 
 extern void phase1_processing(int type, int X, user_data_t * self_info);
@@ -50,4 +54,6 @@ extern void file_read_self_info(int type, int X, user_data_t * self_info);
 
 extern int get_peer_ip_or_port(int sockfd, char *dest, int type);
 extern int get_my_ip_or_port(int server_fd, char *dest, int type);
+
+extern void phase3_file_to_list(char * file_content, int num, item_t * array);
 

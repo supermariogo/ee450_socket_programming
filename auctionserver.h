@@ -6,3 +6,7 @@ extern void phase1_handle_connect(int s_s);
 extern void * phase1_handle_request(void * argv);
 extern void phase2_handle_connect(int s_s);
 extern void * phase2_handle_request(void * argv);
+
+extern void phase3_read_broadcast_file(char *file_content);
+extern void phase3_to_bidder(char *file_content); //and get reply from bidder
+extern void compare_and_bid(char *);
