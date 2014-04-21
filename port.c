@@ -165,7 +165,8 @@ void phase3_file_to_list(char * file_content, int num, item_t * array)
 			tok = strtok(file_content, " \n");
 		else
 			tok = strtok(NULL, " \n");
-fprintf(stdout, "tok is:%s\n sizeof(array[i].seller_name)=%d\n sellername=%d\n",tok, sizeof(array[i].seller_name),array[i].seller_name);
+		strcpy( array->seller_name, tok);
+fprintf(stdout, "tok is:%s\n sizeof(array)=%d\n sellername=%d\n",tok, sizeof(array),array->seller_name);
 
 		strcpy(array[i].seller_name,tok); // get seller name
 fprintf(stdout, "here ?tok is:%s\n",tok);
