@@ -4,8 +4,8 @@
 #define NUNKI "68.181.201.3" 
 #define SERVER_PHASE1_PORT 2039
 #define SERVER_PHASE2_PORT 2139
-#define BIDDER1_PHASE3_PORT 14039
-#define BIDDER2_PHASE3_PORT 14139
+#define BIDDER1_PHASE3_PORT 4039
+#define BIDDER2_PHASE3_PORT 4139
 #define BUFFLEN 1024
 #define BACKLOG 10     // how many pending connections queue will hold
 #define max(A,B) (((A)>(B)) ? (A) : (B))
