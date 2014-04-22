@@ -29,6 +29,7 @@ int main(int argc, char * argv[])
 	close(phase2_s_s);
 	
 	//phase 3
+	sleep(2);
 	char file_content[4096];
 	char file_content2[4096];
 	//read boradcast.txt to file_content
