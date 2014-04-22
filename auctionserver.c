@@ -33,15 +33,16 @@ int main(int argc, char * argv[])
 	char file_content[4096];
 	char file_content2[4096];
 	//read boradcast.txt to file_content
+	fprintf(stdout, "ok1\n");
 	phase3_read_broadcast_file(file_content); 
 	strcpy(file_content2, file_content);//back up to file_content2
-	
+fprintf(stdout, "ok1\n");	
 	//malloc for item arrary; destory file_content; store it to item_array
 	item_array=phase3_file_to_list(file_content,item_num);
-	
+fprintf(stdout, "ok1\n");	
 	//send broadcastList and get reply and store bidder's info	
 	phase3_to_bidder(file_content2); 
-	
+fprintf(stdout, "ok1\n");	
 	//higher price bidder to item.buyer_name item.buyer_price	
 	phase3_calculate();
 
@@ -235,7 +236,8 @@ void file_read_reg(void)
 	int i=0;
 	fprintf(stdout,"----------Loading Registration file-------------------\n");
 	while (fgets(current_line, 1024, fp)!=NULL ){
-
+		if(strcmp(current_line,"")==0)
+			continue;
 		tok = strtok(current_line," ");
 		strcpy(user[i].name,tok);
 		tok = strtok(NULL, " ");
@@ -356,7 +358,8 @@ void phase3_read_broadcast_file(char * file_content)
 	char current_line[1024];
 	fp = fopen ("broadcastList.txt","r"); 
 	while (fgets(current_line, 1024, fp)!=NULL ){
-		line_number++;
+		if(strlen(current_line)>2) //<2 invalid
+			line_number++;
 	}
 	item_num=line_number;
 	file_size = ftell(fp);

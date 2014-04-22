@@ -26,7 +26,8 @@ void phase2_processing(int X)
 			fp = fopen ("itemList2.txt","r");
 
 	while (fgets(current_line, 1024, fp)!=NULL ){
-		line_number++;
+		if(strcmp(current_line,"")!=0)
+			line_number++;
 	}
 
 	file_size = ftell(fp);
