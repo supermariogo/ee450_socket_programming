@@ -67,9 +67,11 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		fprintf(stderr, "invalid Ready command\n");
 		exit(-1);	
 	}
-	
-	fprintf(stdout, "Phase1 complete!\nI will sleep for 1s to let server create next socket----------------------\n");
-	sleep(1);
+	if(type==2)
+	{
+		fprintf(stdout, "seller: Phase1 complete!\nI will sleep for 1s to let server create next socket----------------------\n");
+		sleep(1);
+	}
 	close(s_c);
 
 }
