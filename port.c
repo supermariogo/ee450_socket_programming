@@ -69,7 +69,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	}
 	if(type==2)
 	{
-		fprintf(stdout, "seller: Phase1 complete!\nI will sleep for 1s to let server create next socket----------------------\n");
+		fprintf(stdout, "Seller: Phase1 complete! sleep 1s.server is creating socket----------------------\n");
 		sleep(1);
 	}
 	close(s_c);
