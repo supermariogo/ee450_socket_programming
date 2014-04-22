@@ -163,7 +163,7 @@ item_t * phase3_file_to_list(char * file_content, int num)
 	item_t * array=(item_t*)malloc(num*sizeof(item_t));
 	memset((void *)array, 0, num*sizeof(item_t));
 
-	fprintf(stdout, "the file going to strtok is:\n%s\n",file_content);
+	//fprintf(stdout, "the file going to strtok is:\n%s\n",file_content);
 
 	for(i=0;i<num;i++){
 		

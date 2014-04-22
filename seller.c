@@ -35,7 +35,7 @@ void phase2_processing(int X)
 	fclose(fp);
 
 	sprintf(command,"Items#%d#%s",line_number-1,file_content);
-	fprintf(stdout, "I am going to send:%s\n", command);
+	//fprintf(stdout, "seller%d: I am going to send:%s\n",SELLERX,command);
 
 //create connection
 	int s_c; //socket fd 

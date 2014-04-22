@@ -21,10 +21,8 @@ int main(int argc, char *argv[])
 	//strcpy(self_info.name,"NAMENAME");
 
 	phase3_read_bidding_file(BIDDERX,bid_file);
-	fprintf(stdout, "bid file has read to to memory:%s\n",bid_file );
 	
 	item_bid_array=phase3_file_to_list(bid_file, item_bid_num);
-	fprintf(stdout, "bid file has copied to bid_array, begin UDP\n");
 
 	/*
 	 *get messsage form client
@@ -101,22 +99,21 @@ void phase3_bid(void)
 	}
 	
 	if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) {
-	fprintf(stderr, "I am bidder%d, I cannot bind for UDP\n", BIDDERX);
-	perror("bind failed");
-	exit(1);
+		fprintf(stderr, "I am bidder%d, I cannot bind for UDP\n", BIDDERX);
+		perror("bind failed");
+		exit(1);
 	}
 	
 	/* 1. now loop, receiving data and printing what we received */
-	fprintf(stdout, "waitting for recvfrom().................\n");
+	fprintf(stdout, "bidder%d: waitting for recvfrom()(after bind)...........................\n",BIDDERX);
 	int recvlen = recvfrom(fd, buff, BUFFLEN, 0, (struct sockaddr *)&remaddr, &addrlen);
 	if(recvlen<=0){
 		fprintf(stderr,"recvfrom error\n");
 		exit(-1);
 	}else
-		fprintf(stdout, "received:%s\n", buff);	
+		fprintf(stdout, "bidder%d: received:\n%s\n",BIDDERX,buff);	
 	
 	// 2. stroke the message and store it to broadcast list(item_array)
-	fprintf(stdout, "beging to stroke message and store it to item_array\n");
 	char * tok;
 	tok=strtok(buff,"#\n ");
 	item_num=atoi(tok);
@@ -126,14 +123,16 @@ void phase3_bid(void)
 	// 3. compare array and construct message name#10#30#40# 
 	compare_and_bid(message);
 	// 4. send message
-	if(self_info.authentication_success!=1)
+	if(self_info.authentication_success!=1){
 		sendto(fd, "failed bidder#", strlen("failed bidder#"), 0, (struct sockaddr *)&remaddr, addrlen);
+		fprintf(stdout, "but I am a failded bidder\n");
+	}
 	else{
 		if(sendto(fd, message, strlen(message), 0, (struct sockaddr *)&remaddr, addrlen)<0){
 			perror("sendto error : connect");
 			exit(-1);
-		}else
-			fprintf(stdout,"send complete\nwating for annoucement-------------------------\n");
+		}
+		fprintf(stdout,"bidder%d: send complete, wating for annoucement\n---------------------------------\n", BIDDERX);
 	}
 }
 
@@ -150,12 +149,14 @@ void compare_and_bid(char * message)
 			   strcmp(item_array[j].seller_name,item_bid_array[i].seller_name)==0)
 			{
 				item_array[j].bidder_price[0]=item_bid_array[i].price;
-				fprintf(stdout,"match!, item_name=%s, our price=%d\n",item_array[j].item_name,item_array[j].bidder_price[0]);
+				fprintf(stdout,"bidder%d: match!, item_name=%s, our price=%d\n",BIDDERX, item_array[j].item_name,item_array[j].bidder_price[0]);
 				break;
 			}
 		}
 		sprintf(message,"%s%d#",message,item_array[j].bidder_price[0]);
 			//bidder_price[0] is only used for store and output, not ture meaning
 	}
-	fprintf(stdout, "the message going to send is:%s\n",message); } 
+	fprintf(stdout, "bidder%d: send: %s\n",BIDDERX,message); 
+
+} 
 

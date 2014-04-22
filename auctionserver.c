@@ -362,7 +362,6 @@ void phase3_read_broadcast_file(char * file_content)
 	rewind(fp);
 	fread(file_content,sizeof(char),file_size,fp);
 	fclose(fp);
-	fprintf(stdout, "broadcastList:%s\n",file_content);
 	
 }
 
@@ -396,12 +395,12 @@ void phase3_to_bidder(char *file_content)
 			perror("sendto failed");
 			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
 		}
-		fprintf(stdout, "send out message:%s\nbegin to wait recvfrom()\n",message);
+		fprintf(stdout, "SERVER: broadcast %s\nwait recvfrom()(bidderX's price)\n",message);
 		/* get reply from bidderi */
 		memset((char*)buff, 0, BUFFLEN);
 		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
 		if (recvlen > 0) {
-		    fprintf(stdout,"received message:%s\n--------------------------------\n", buff);
+		    fprintf(stdout,"SERVER: received:\n%s\n--------------------------------\n", buff);
 			if(strcmp(buff,"failed bidder#")==0)
 				break;
 		}else{
