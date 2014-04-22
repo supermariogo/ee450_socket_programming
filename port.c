@@ -41,11 +41,11 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	tok = strtok(buff,"#");
 	if(strcmp("Accepted",tok)!=0){
 		fprintf(stdout,"I was Rejected--------------------\n");
-		self_info->authentication_success=1;
+		self_info->authentication_success=0;
 	}
 	else{
 		fprintf(stdout,"I was Accpted---------------------\n");
-		self_info->authentication_success=0;
+		self_info->authentication_success=1;
 	}
 
 	//upon receive "Ready" to sync 4 threads  ask "Ready?" 

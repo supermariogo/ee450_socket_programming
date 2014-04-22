@@ -1,5 +1,5 @@
 S_Matt S_Matt_Dress1 500
 S_Matt S_Matt_Dress2 800
 S_Matt S_Matt_Watch1 1200
-S_John S_John_Watch1 500
+S_John S_John_Watch1 0
 S_John S_John_Watch2 1000

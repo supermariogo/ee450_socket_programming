@@ -18,24 +18,22 @@ int main(int argc, char * argv[])
 	memset(&user, 0, sizeof(user[10]));
 	file_read_reg();
 
-/*
- *    int phase1_s_s;
- *    phase1_s_s=socket_bind_listen(SERVER_PHASE1_PORT);	
- *    phase1_handle_connect(phase1_s_s); 
- *    close(phase1_s_s);
- *
- *    int phase2_s_s;
- *    phase2_s_s=socket_bind_listen(SERVER_PHASE2_PORT);
- *    phase2_handle_connect(phase2_s_s);
- *    close(phase2_s_s);
- */
+	int phase1_s_s;
+	phase1_s_s=socket_bind_listen(SERVER_PHASE1_PORT);	
+	phase1_handle_connect(phase1_s_s); 
+	close(phase1_s_s);
 
+	int phase2_s_s;
+	phase2_s_s=socket_bind_listen(SERVER_PHASE2_PORT);
+	phase2_handle_connect(phase2_s_s);
+	close(phase2_s_s);
+	
+	//phase 3
 	char file_content[4096];
 	char file_content2[4096];
 	//read boradcast.txt to file_content
 	phase3_read_broadcast_file(file_content); 
-	
-	strcpy(file_content2, file_content);
+	strcpy(file_content2, file_content);//back up to file_content2
 	
 	//malloc for item arrary; destory file_content; store it to item_array
 	item_array=phase3_file_to_list(file_content,item_num);
@@ -43,8 +41,10 @@ int main(int argc, char * argv[])
 	//send broadcastList and get reply and store bidder's info	
 	phase3_to_bidder(file_content2); 
 	
-	
+	//higher price bidder to item.buyer_name item.buyer_price	
 	phase3_calculate();
+
+
 	//phase3_announce();
 
 	return 0; 
@@ -399,7 +399,7 @@ void phase3_to_bidder(char *file_content)
 		memset((char*)buff, 0, BUFFLEN);
 		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
 		if (recvlen > 0) {
-		    fprintf(stdout,"received message:%s\n", buff);
+		    fprintf(stdout,"received message:%s\n--------------------------------\n", buff);
 			if(strcmp(buff,"failed bidder#")==0)
 				break;
 		}else{
@@ -424,7 +424,7 @@ void phase3_calculate(void)
 		j=get_buyer(item_array[i]);
 		if (j==-1){
 			fprintf(stdout, "item_array[%d] failed to sell\n",i);
-			break;
+			continue;
 		}
 		else{
 			item_array[i].buyer_price=item_array[i].bidder_price[j];

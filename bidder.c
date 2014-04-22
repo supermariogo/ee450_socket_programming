@@ -14,26 +14,29 @@ char bid_file[4096];
 
 int main(int argc, char *argv[])
 {
-	//file_read_self_info(1, BIDDERX, &self_info);
-	//phase1_processing(1, BIDDERX, &self_info);
+	file_read_self_info(1, BIDDERX, &self_info);
+	phase1_processing(1, BIDDERX, &self_info);
 
-self_info.authentication_success=BIDDERX;
-strcpy(self_info.name,"NAMENAME");
-		// store bidding.txt to bid_file
-		phase3_read_bidding_file(BIDDERX,bid_file);
-		fprintf(stdout, "bid file has read to to memory:%s\n",bid_file );
-		
-		item_bid_array=phase3_file_to_list(bid_file, item_bid_num);
-		fprintf(stdout, "bid file has copied to bid_array, begin UDP\n");
+	//self_info.authentication_success=BIDDERX;
+	//strcpy(self_info.name,"NAMENAME");
 
-		// get messsage form client
-		// stroke the message and store it to broadcast_file
-		// broadcat to item_array list
-		// compare item_array and
-		// send name#10#30#40#
-		phase3_bid();
-		if(self_info.authentication_success!=1)
-			printf("I am not a authorised user. END\n");
+	phase3_read_bidding_file(BIDDERX,bid_file);
+	fprintf(stdout, "bid file has read to to memory:%s\n",bid_file );
+	
+	item_bid_array=phase3_file_to_list(bid_file, item_bid_num);
+	fprintf(stdout, "bid file has copied to bid_array, begin UDP\n");
+
+	/*
+	 *get messsage form client
+	 *stroke the message and store it to broadcast_file
+	 *broadcat to item_array list
+	 *compare item_array and
+	 *send name#10#30#40#
+	 */
+	phase3_bid();
+
+	if(self_info.authentication_success!=1)
+		printf("I am not a authorised user. END\n");
 
 	return 0;
 }
@@ -102,7 +105,7 @@ void phase3_bid(void)
 	        exit(1);
 	}
 	
-	/* now loop, receiving data and printing what we received */
+	/* 1. now loop, receiving data and printing what we received */
 	fprintf(stdout, "waitting for recvfrom().................\n");
 	int recvlen = recvfrom(fd, buff, BUFFLEN, 0, (struct sockaddr *)&remaddr, &addrlen);
 	if(recvlen<=0){
@@ -111,7 +114,7 @@ void phase3_bid(void)
 	}else
 		fprintf(stdout, "received:%s\n", buff);	
 	
-	// stroke the message and store it to broadcast list(item_array)
+	// 2. stroke the message and store it to broadcast list(item_array)
 	fprintf(stdout, "beging to stroke message and store it to item_array\n");
 	char * tok;
 	tok=strtok(buff,"#\n ");
@@ -119,9 +122,9 @@ void phase3_bid(void)
 	item_array= phase3_file_to_list(tok+strlen(tok)+1,item_num);
 
 	char message[1024];
-	// compare array and construct message name#10#30#40# 
+	// 3. compare array and construct message name#10#30#40# 
 	compare_and_bid(message);
-	// send message
+	// 4. send message
 	if(self_info.authentication_success!=1)
 		sendto(fd, "failed bidder#", strlen("failed bidder#"), 0, (struct sockaddr *)&remaddr, addrlen);
 	else{
