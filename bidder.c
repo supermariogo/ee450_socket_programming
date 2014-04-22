@@ -53,7 +53,7 @@ void phase3_read_bidding_file(int X, char * bid_file)
 		fp = fopen ("bidding2.txt","r");
 
 	while (fgets(current_line, 1024, fp)!=NULL ){
-		if(strcmp(current_line,"")!=0)
+		if(strlen(current_line)>2) //<2 invalid
 			line_number++;
 	}
 	item_bid_num=line_number;

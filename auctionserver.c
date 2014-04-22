@@ -236,7 +236,7 @@ void file_read_reg(void)
 	int i=0;
 	fprintf(stdout,"----------Loading Registration file-------------------\n");
 	while (fgets(current_line, 1024, fp)!=NULL ){
-		if(strcmp(current_line,"")==0)
+		if(strlen(current_line)<2) //<2 invalid
 			continue;
 		tok = strtok(current_line," ");
 		strcpy(user[i].name,tok);
