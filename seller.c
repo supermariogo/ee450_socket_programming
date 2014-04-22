@@ -7,7 +7,9 @@ int main(int argc, char *argv[])
 	file_read_self_info(2, SELLERX, &self_info);
 	phase1_processing(2, SELLERX, &self_info);
 	phase2_processing(SELLERX);
-
+	
+	listen_result(2, SELLERX, self_info.name);
+	
 	return 0;
 }
 

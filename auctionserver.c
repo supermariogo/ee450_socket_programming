@@ -33,54 +33,29 @@ int main(int argc, char * argv[])
 	char file_content[4096];
 	char file_content2[4096];
 	//read boradcast.txt to file_content
-	fprintf(stdout, "ok1\n");
 	phase3_read_broadcast_file(file_content); 
 	strcpy(file_content2, file_content);//back up to file_content2
-fprintf(stdout, "ok1\n");	
 	//malloc for item arrary; destory file_content; store it to item_array
 	item_array=phase3_file_to_list(file_content,item_num);
-fprintf(stdout, "ok1\n");	
 	//send broadcastList and get reply and store bidder's info	
 	phase3_to_bidder(file_content2); 
-fprintf(stdout, "ok1\n");	
 	//higher price bidder to item.buyer_name item.buyer_price	
 	phase3_calculate();
 
+	sleep(5);
+	phase3_announce(SELLER1_FINAL_PORT);
+	phase3_announce(SELLER2_FINAL_PORT);
+	phase3_announce(BIDDER1_FINAL_PORT);
+	phase3_announce(BIDDER2_FINAL_PORT);
 
-	//phase3_announce();
+	printf("End of Phase 3 for Auction Server.\n");
 
 	return 0; 
 }
 
 
 
-int socket_bind_listen(uint16_t PORT){
-	int s_s ; 
-	struct sockaddr_in addr_info;
-	s_s = socket(AF_INET, SOCK_STREAM, 0); 
-	
-	memset(&addr_info, 0, sizeof(addr_info)); 
-	addr_info.sin_family = AF_INET; 
-	addr_info.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr_info.sin_port = htons(PORT);
-	
-	if (bind(s_s, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
-		perror("server error : bind");
-		exit(1);
-	}
-	
-	if (listen(s_s, BACKLOG) == -1) {
-		perror("server error : listen");
-		exit(1);
-	}
-	fprintf(stdout, "server : begin to listen\n");
-	if(PORT==SERVER_PHASE1_PORT)
-		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
-	else if(PORT==SERVER_PHASE2_PORT)
-		printf("Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
-	return s_s;
-
-} 
+ 
 void phase1_handle_connect(int phase1_s_s) 
 { 
 	if(pthread_barrier_init(&barr, NULL, 4)){
@@ -435,6 +410,7 @@ void phase3_calculate(void)
 			item_array[i].buyer_price=item_array[i].bidder_price[j];
 			strcpy(item_array[i].buyer_name,item_array[i].bidder_name[j]);
 			fprintf(stdout, "item_array[%d] item_name=%s, sell to bidder_name=%s, at price %d\n", i,item_array[i].item_name,item_array[i].buyer_name,item_array[i].buyer_price);
+			printf("item %s was sold at price %d (0 means failed)\n", item_array[i].item_name,item_array[i].buyer_price);
 		}
 	
 	}
@@ -452,7 +428,59 @@ int get_buyer(item_t item){
 			return 1;
 	}
 } 
-//void phase3_file_to_list(char * file_content, int num, item_t * array)
-	//phase3_announce();
 
+void phase3_announce(int PORT)
+{
+	int s_c; //socket fd 
+	struct sockaddr_in addr_info; // connect info
+	char buff[BUFFLEN]="";
+	int n,i;
+	char *tok = NULL;
+	char user_name[32];
+	char message[8192];
+	memset(message, 0, sizeof(message));
+	memset(&addr_info, 0, sizeof(addr_info)); 
+    addr_info.sin_family = AF_INET;
+	inet_pton(AF_INET,SERVERHOST, &addr_info.sin_addr);
+    addr_info.sin_port = htons(PORT); //from host byte order to network byte order.  
+
+	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
+    if (connect(s_c, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
+        close(s_c);
+        perror("client error : connect");
+		exit(-1);
+    }
+
+	n = recv(s_c, buff, BUFFLEN, 0);
+	if (n > 0) 
+		fprintf(stdout, "client : message from server %s\n",buff);
+	else {
+		fprintf(stderr, "client : server disconnected, \n");
+		close(s_c);
+		exit(0);
+	}
+	tok = strtok(buff,"#");
+	strcpy(user_name,tok);
+
+	for(i=0;i<item_num;i++)
+	{
+		if(PORT<4000)  //to seller
+		{
+			if(strcmp(user_name, item_array[i].seller_name)==0)
+				sprintf(message,"%sItem %s was sold at price %d\n",message, item_array[i].item_name,item_array[i].buyer_price);
+		}
+		else
+		{
+			if(strcmp(user_name, item_array[i].buyer_name)==0)
+				sprintf(message,"%sItem %s was sold at price %d\n",message, item_array[i].item_name,item_array[i].buyer_price);
+		}
+	}
+	fprintf(stdout, "send to port %d\n%s\n------------------------------------\n",PORT,message);
+	if (send(s_c, message,strlen(message),0)==-1)
+		perror("client error : send");
+
+	close(s_c);
+	return;
+
+}
 	

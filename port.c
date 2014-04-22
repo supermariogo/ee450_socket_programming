@@ -184,3 +184,79 @@ item_t * phase3_file_to_list(char * file_content, int num)
 	return array;
 }
 
+
+int socket_bind_listen(uint16_t PORT){
+	int s_s ; 
+	struct sockaddr_in addr_info;
+	s_s = socket(AF_INET, SOCK_STREAM, 0); 
+	
+	memset(&addr_info, 0, sizeof(addr_info)); 
+	addr_info.sin_family = AF_INET; 
+	addr_info.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr_info.sin_port = htons(PORT);
+	
+	if (bind(s_s, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
+		perror("server error : bind");
+		exit(1);
+	}
+	
+	if (listen(s_s, BACKLOG) == -1) {
+		perror("server error : listen");
+		exit(1);
+	}
+	fprintf(stdout, "server : begin to listen\n");
+	if(PORT==SERVER_PHASE1_PORT)
+		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
+	else if(PORT==SERVER_PHASE2_PORT)
+		printf("Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
+	return s_s;
+
+}
+
+
+void listen_result(int type, int X, char *user_name)
+{
+	int s_s;
+	int s_c; 
+	struct sockaddr_in from;
+	char buff[8192];
+	int PORT;
+	int n;
+	socklen_t len = sizeof(from); 
+	if(type==1){
+		if(X==1)
+			PORT= BIDDER1_FINAL_PORT;
+		else
+			PORT= BIDDER2_FINAL_PORT; 
+	}
+	else{
+		if(X==1)
+			PORT= SELLER1_FINAL_PORT; 
+		else
+			PORT= SELLER2_FINAL_PORT;	
+	}
+	fprintf(stdout, "listen port %d\n",PORT);
+	s_s=socket_bind_listen(PORT);
+	s_c = accept(s_s, (struct sockaddr *)&from, &len); 	
+	
+	sprintf(buff,"%s#",user_name);
+	if (send(s_c, buff,strlen(buff),0)==-1)
+		perror("client error : send");
+	
+	memset(buff,0,8192);
+	n = recv(s_c, buff, 8192, 0);
+	if (n > 0) 
+		printf("%s\n",buff);
+	else {
+		fprintf(stderr, "client : server disconnected \n");
+		close(s_c);
+		exit(0);
+	}
+	close(s_c);
+	close(s_s);
+
+	if(type==1)
+		printf("End of Phase 3 for Bidder%d\n", X);
+	else
+		printf("End of Phase 3 for Seller%d\n", X);
+}
