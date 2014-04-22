@@ -6,7 +6,7 @@ nunki: MyList port server bidder seller
 port:
 	gcc port.c -o port.o -DSERVERHOST=NUNKI -g -c -Wall
 server: 
-	gcc auctionserver.c port.o MyList.o -o server.o -g -Wall -lpthread -lsocket -lnsl -lresolv 
+	gcc auctionserver.c port.o MyList.o -o server.o -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv 
 
 bidder: 
 	gcc bidder.c port.o -o bidder1.o -DBIDDERX=1 -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv
@@ -25,7 +25,7 @@ port_u:
 	gcc port.c -o port.o -DSERVERHOST=LOCALHOST -g -c -Wall
 
 server_u: 
-	gcc auctionserver.c MyList.o port.o -o server.o -g -Wall -lpthread  
+	gcc auctionserver.c MyList.o port.o -o server.o -DSERVERHOST=LOCALHOST -g -Wall -lpthread  
 
 bidder_u: 
 	gcc bidder.c  port.o -o bidder1.o -DBIDDERX=1 -DSERVERHOST=LOCALHOST -g -Wall -lpthread
