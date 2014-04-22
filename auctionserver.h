@@ -10,3 +10,6 @@ extern void * phase2_handle_request(void * argv);
 extern void phase3_read_broadcast_file(char *file_content);
 extern void phase3_to_bidder(char *file_content); //and get reply from bidder
 extern void compare_and_bid(char *);
+extern int get_buyer(item_t item);
+extern void phase3_calculate(void);
+

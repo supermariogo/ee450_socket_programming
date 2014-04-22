@@ -8,6 +8,7 @@
 #define BIDDER2_PHASE3_PORT 4139
 #define BUFFLEN 1024
 #define BACKLOG 10     // how many pending connections queue will hold
+#define max(A,B) (((A)>(B)) ? (A) : (B))
 #endif
 
 
@@ -46,6 +47,8 @@ typedef struct tag_item {
 	int price;
 	char bidder_name[2][32];
 	int  bidder_price[2];
+	char buyer_name[32];
+	int buyer_price;
 } item_t;
 
 extern void phase1_processing(int type, int X, user_data_t * self_info);

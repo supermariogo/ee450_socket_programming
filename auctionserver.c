@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
 	phase3_to_bidder(file_content2); 
 	
 	
-	
+	phase3_calculate();
 	//phase3_announce();
 
 	return 0; 
@@ -416,6 +416,37 @@ void phase3_to_bidder(char *file_content)
 	}
 }
 
+void phase3_calculate(void)
+{	
+	int i=0;
+	int j=0;
+	for(i=0;i<item_num;i++){
+		j=get_buyer(item_array[i]);
+		if (j==-1){
+			fprintf(stdout, "item_array[%d] failed to sell\n",i);
+			break;
+		}
+		else{
+			item_array[i].buyer_price=item_array[i].bidder_price[j];
+			strcpy(item_array[i].buyer_name,item_array[i].bidder_name[j]);
+			fprintf(stdout, "item_array[%d] item_name=%s, sell to bidder_name=%s, at price %d\n", i,item_array[i].item_name,item_array[i].buyer_name,item_array[i].buyer_price);
+		}
+	
+	}
+}
+
+int get_buyer(item_t item){
+	if (item.bidder_price[0]==item.bidder_price[1])
+		return -1;
+	else if(item.price>max(item.bidder_price[0],item.bidder_price[1]))
+		return -1;
+	else {
+		if (item.bidder_price[0]>item.bidder_price[1])	
+			return 0;
+		else 
+			return 1;
+	}
+} 
 //void phase3_file_to_list(char * file_content, int num, item_t * array)
 	//phase3_announce();
 
