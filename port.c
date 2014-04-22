@@ -39,10 +39,14 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	}
 
 	tok = strtok(buff,"#");
-	if(strcmp("Accepted",tok)!=0)
+	if(strcmp("Accepted",tok)!=0){
 		fprintf(stdout,"I was Rejected--------------------\n");
-	else
+		self_info->authentication_success=1;
+	}
+	else{
 		fprintf(stdout,"I was Accpted---------------------\n");
+		self_info->authentication_success=0;
+	}
 
 	//upon receive "Ready" to sync 4 threads  ask "Ready?" 
 	if (send(s_c, "Ready?",strlen("Ready?"),0)==-1)
@@ -155,23 +159,24 @@ item_t * phase3_file_to_list(char * file_content, int num)
 	char * tok=NULL;
 	int i=0;
 	item_t * array=(item_t*)malloc(num*sizeof(item_t));
-	memset((char*)&array, 0, num*sizeof(item_t));
-	fprintf(stdout, "the file %d going to strtok is:%s\n",file_content,file_content);
+	memset((void *)array, 0, num*sizeof(item_t));
+
+	fprintf(stdout, "the file going to strtok is:%s\n",file_content);
 
 	for(i=0;i<num;i++){
 		
 		if(i==0)
-			tok = strtok(file_content, " \n");
+			tok = strtok(file_content, " \n#");
 		else
-			tok = strtok(NULL, " \n");
+			tok = strtok(NULL, " \n#");
 		strcpy(array[i].seller_name,tok); // get seller name
-		fprintf(stdout, "here ?tok is:%s\n",tok);
+		fprintf(stdout, "tok is:%s\n",tok);
 
-		tok = strtok(NULL, " \n");
+		tok = strtok(NULL, " \n#");
 		fprintf(stdout, "tok is:%s\n",tok);
 		strcpy(array[i].item_name,tok); // get item name
 
-		tok = strtok(NULL, " \n");
+		tok = strtok(NULL, " \n#");
 		fprintf(stdout, "tok is:%s\n",tok);
 		array[i].price=atoi(tok);  // get item price
 	}

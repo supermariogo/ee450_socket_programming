@@ -18,15 +18,17 @@ int main(int argc, char * argv[])
 	memset(&user, 0, sizeof(user[10]));
 	file_read_reg();
 
-	int phase1_s_s;
-	phase1_s_s=socket_bind_listen(SERVER_PHASE1_PORT);	
-	phase1_handle_connect(phase1_s_s); 
-	close(phase1_s_s);
-
-	int phase2_s_s;
-	phase2_s_s=socket_bind_listen(SERVER_PHASE2_PORT);
-	phase2_handle_connect(phase2_s_s);
-	close(phase2_s_s);
+/*
+ *    int phase1_s_s;
+ *    phase1_s_s=socket_bind_listen(SERVER_PHASE1_PORT);	
+ *    phase1_handle_connect(phase1_s_s); 
+ *    close(phase1_s_s);
+ *
+ *    int phase2_s_s;
+ *    phase2_s_s=socket_bind_listen(SERVER_PHASE2_PORT);
+ *    phase2_handle_connect(phase2_s_s);
+ *    close(phase2_s_s);
+ */
 
 	char file_content[4096];
 	char file_content2[4096];
@@ -392,18 +394,22 @@ void phase3_to_bidder(char *file_content)
 			perror("sendto failed");
 			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
 		}
+		fprintf(stdout, "send out message:%s\nbegin to wait recvfrom()\n",message);
 		/* get reply from bidderi */
+		memset((char*)buff, 0, BUFFLEN);
 		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
 		if (recvlen > 0) {
 		    fprintf(stdout,"received message:%s\n", buff);
+			if(strcmp(buff,"failed bidder#")==0)
+				break;
 		}else{
 			fprintf(stderr, "recvfrom error\n");
 		}
 		//  buff=name#20#30#40
-		tok = strtok(buff, "#\n");
+		tok = strtok(buff, "#\n ");
 		strcpy(bidder_name, tok);
 		for(j=0;j<item_num;j++){
-			tok = strtok(NULL, "#\n");
+			tok = strtok(NULL, "#\n ");
 			item_array[j].bidder_price[i]=atoi(tok);  // get bidder price
 			strcpy(item_array[j].bidder_name[i],bidder_name); // get bidder_name
 		}
