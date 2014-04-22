@@ -1,8 +1,16 @@
 nunki: MyList port server bidder seller 
-	@ echo "\n----------------*.txt--------------------\n"
-	@ ls *.txt
-	@ echo "\n----------------*.o--------------------\n"
+	@ echo "----------------my output file *.o--------------------"
 	@ ls *.o
+	@ echo "---------------------attention------------------------"
+	@ echo "the following process are using my ports please kill them"
+	@ lsof -i:2039
+	@ lsof -i:2139
+	@ lsof -i:4039
+	@ lsof -i:4139
+	@ lsof -i:3039
+	@ lsof -i:3139
+	@ lsof -i:5039
+	@ lsof -i:5139
 port:
 	gcc port.c -o port.o -DSERVERHOST=NUNKI -g -c -Wall
 server: 
@@ -17,10 +25,18 @@ seller:
 	gcc seller.c port.o -o seller2.o -DSELLERX=2 -DSERVERHOST=NUNKI -g -Wall -lpthread -lsocket -lnsl -lresolv
 
 u: MyList port_u server_u bidder_u seller_u 
-	@ echo "\n----------------*.txt--------------------\n"
-	@ ls *.txt
-	@ echo "\n----------------*.o--------------------\n"
+	@ echo "----------------my output file *.o--------------------"
 	@ ls *.o
+	@ echo "---------------------attention------------------------"
+	@ echo "the following process are using my ports please kill them"
+	lsof -i:2039
+	lsof -i:2139
+	lsof -i:4039
+	lsof -i:4139
+	lsof -i:3039
+	lsof -i:3139
+	lsof -i:5039
+	lsof -i:5139
 port_u: 
 	gcc port.c -o port.o -DSERVERHOST=LOCALHOST -g -c -Wall
 
