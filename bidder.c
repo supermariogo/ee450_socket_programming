@@ -101,8 +101,9 @@ void phase3_bid(void)
 	}
 	
 	if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) {
-	        perror("bind failed");
-	        exit(1);
+	fprintf(stderr, "I am bidder%d, I cannot bind for UDP\n", BIDDERX);
+	perror("bind failed");
+	exit(1);
 	}
 	
 	/* 1. now loop, receiving data and printing what we received */

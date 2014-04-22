@@ -101,12 +101,14 @@ void file_read_self_info(int type, int X, user_data_t * self_info)
 		strcpy(self_info->password,tok);
 		tok = strtok(NULL, " \n");
 		strcpy(self_info->account,tok);
-
-		fprintf(stdout, "user.type=%s\n",self_info->type);	
-		fprintf(stdout, "user.name=%s\n",self_info->name);
-		fprintf(stdout, "user.password=%s\n",self_info->password);
-		fprintf(stdout, "user.account=%s\n",self_info->account);
-		
+		/*
+		 *
+		 *    fprintf(stdout, "user.type=%s\n",self_info->type);	
+		 *    fprintf(stdout, "user.name=%s\n",self_info->name);
+		 *    fprintf(stdout, "user.password=%s\n",self_info->password);
+		 *    fprintf(stdout, "user.account=%s\n",self_info->account);
+		 *
+		 */
 	}
 	fclose(fp);
 
@@ -161,7 +163,7 @@ item_t * phase3_file_to_list(char * file_content, int num)
 	item_t * array=(item_t*)malloc(num*sizeof(item_t));
 	memset((void *)array, 0, num*sizeof(item_t));
 
-	fprintf(stdout, "the file going to strtok is:%s\n",file_content);
+	fprintf(stdout, "the file going to strtok is:\n%s\n",file_content);
 
 	for(i=0;i<num;i++){
 		
@@ -170,14 +172,11 @@ item_t * phase3_file_to_list(char * file_content, int num)
 		else
 			tok = strtok(NULL, " \n#");
 		strcpy(array[i].seller_name,tok); // get seller name
-		fprintf(stdout, "tok is:%s\n",tok);
 
 		tok = strtok(NULL, " \n#");
-		fprintf(stdout, "tok is:%s\n",tok);
 		strcpy(array[i].item_name,tok); // get item name
 
 		tok = strtok(NULL, " \n#");
-		fprintf(stdout, "tok is:%s\n",tok);
 		array[i].price=atoi(tok);  // get item price
 	}
 	return array;

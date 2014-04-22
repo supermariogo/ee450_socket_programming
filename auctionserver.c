@@ -242,9 +242,11 @@ void file_read_reg(void)
 		tok = strtok(NULL, " \n");
 		strcpy(user[i].account,tok);
 
-		fprintf(stdout, "name=%s ",user[i].name);
-		fprintf(stdout, "password=%s ",user[i].password);
-		fprintf(stdout, "account=%s \n",user[i].account);
+		/*
+		 *fprintf(stdout, "name=%s ",user[i].name);
+		 *fprintf(stdout, "password=%s ",user[i].password);
+		 *fprintf(stdout, "account=%s \n",user[i].account);
+		 */
 		
 		i++;
 	}
