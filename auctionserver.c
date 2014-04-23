@@ -389,7 +389,7 @@ void phase3_to_bidder(char *file_content)
 		if (recvlen > 0) {
 		    printf("Phase 3: Auction Server received a bidding from Bidder\n%s\n--------------------------------\n", buff);
 			if(strcmp(buff,"failed bidder#")==0)
-				break;
+				continue;
 		}else{
 			fprintf(stderr, "recvfrom error\n");
 		}
@@ -469,7 +469,7 @@ void phase3_announce(int PORT)
 	}
 	tok = strtok(buff,"#");
 	strcpy(user_name,tok);
-
+	
 	for(i=0;i<item_num;i++)
 	{
 		if(PORT<4000)  //to seller

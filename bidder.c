@@ -91,10 +91,14 @@ void phase3_bid(void)
 	memset((char *)&myaddr, 0, sizeof(myaddr));
 	myaddr.sin_family = AF_INET;
 	inet_pton(AF_INET, SERVERHOST, &myaddr.sin_addr);
-	if(BIDDERX==1)
+	if(BIDDERX==1){
 		myaddr.sin_port = htons(BIDDER1_PHASE3_PORT);
-	else if(BIDDERX==2)
+		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER1_PHASE3_PORT,SERVERHOST);
+	}
+	else if(BIDDERX==2){
 		myaddr.sin_port = htons(BIDDER2_PHASE3_PORT);
+		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER2_PHASE3_PORT,SERVERHOST);
+	}
 	else{
 		fprintf(stderr, "bidder what?!\n");
 		exit(1);
@@ -105,7 +109,7 @@ void phase3_bid(void)
 		perror("bind failed");
 		exit(1);
 	}
-	
+		
 	/* 1. now loop, receiving data and printing what we received */
 	fprintf(stdout, "bidder%d: waitting for recvfrom()(after bind)...........................\n",BIDDERX);
 	int recvlen = recvfrom(fd, buff, BUFFLEN, 0, (struct sockaddr *)&remaddr, &addrlen);
@@ -113,7 +117,8 @@ void phase3_bid(void)
 		fprintf(stderr,"recvfrom error\n");
 		exit(-1);
 	}else
-		fprintf(stdout, "bidder%d: received:\n%s\n",BIDDERX,buff);	
+		printf("Phase 3: (Item list displayed here)\n%s\n",buff);
+		//printf("bidder%d: received:\n%s\n",BIDDERX,buff);	
 	
 	// 2. stroke the message and store it to broadcast list(item_array)
 	char * tok;

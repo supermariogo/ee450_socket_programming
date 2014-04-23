@@ -14,7 +14,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	inet_pton(AF_INET,SERVERHOST, &phase1_addr_info.sin_addr);
     phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); //from host byte order to network byte order.  
 
-	fprintf(stdout, "Hello, I am type%d(1bidder 2seller) #%d\n",type, X);
+	//fprintf(stdout, "Hello, I am type%d(1bidder 2seller) #%d\n",type, X);
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
     if (connect(s_c, (struct sockaddr *) &phase1_addr_info, sizeof(phase1_addr_info)) == -1) {
@@ -24,8 +24,11 @@ void phase1_processing(int type, int X, user_data_t * self_info)
     }
 	get_my_ip_or_port(s_c,self_info->ip,1);
 	get_my_ip_or_port(s_c,self_info->port,2);
+	if(type==1)
+		printf("Phase 1: <Bidder%d> has TCP port %s and IP address:%s\n",X, self_info->port,self_info->ip);
+	else
+		printf("Phase 1: <Seller%d> has TCP port %s and IP address:%s\n",X, self_info->port,self_info->ip);
 
-	
 	if (send(s_c, self_info->command,strlen(self_info->command),0)==-1)
     	perror("client error : send");
 
@@ -37,14 +40,17 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		close(s_c);
 		exit(0);
 	}
-
+	printf("Phase 1: Login request. User: %s, password: %s, Bank account: %s\n", self_info->name,self_info->password,self_info->account);
 	tok = strtok(buff,"#");
 	if(strcmp("Accepted",tok)!=0){
-		fprintf(stdout,"I was Rejected--------------------\n");
+		printf("Phase 1: Login request reply: Rejected\n");
 		self_info->authentication_success=0;
 	}
 	else{
-		fprintf(stdout,"I was Accpted---------------------\n");
+		printf("Phase 1: Login request reply: Accepted\n");
+		if(type==2)//only for seller
+			printf("Phase 1: Auction Server has IP Address: %s and PreAuction TCP Port Number: %d \n", NUNKI,SERVER_PHASE2_PORT);
+		
 		self_info->authentication_success=1;
 	}
 
@@ -67,9 +73,15 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		fprintf(stderr, "invalid Ready command\n");
 		exit(-1);	
 	}
+
+	/*
+	 *if(type==1)
+	 *    printf("End of Phase 1 for <Bidder%d>.\n", X);
+	 *else 
+	 */
 	if(type==2)
 	{
-		fprintf(stdout, "Seller: Phase1 complete! sleep 1s.server is creating socket----------------------\n");
+		printf("End of Phase 1 for <Seller%d>. \n",X);
 		sleep(1);
 	}
 	close(s_c);
@@ -250,6 +262,9 @@ void listen_result(int type, int X, char *user_name)
 	n = recv(s_c, buff, 8192, 0);
 	if (n > 0) 
 		printf("%s\n",buff);
+	else if(n==0){
+		printf("NO INFORMATION FOR ME, I AM FAILED BIDDER\n");
+	}
 	else {
 		fprintf(stderr, "can't receive infomation of me \n");
 		close(s_c);
@@ -259,7 +274,7 @@ void listen_result(int type, int X, char *user_name)
 	close(s_s);
 
 	if(type==1)
-		printf("End of Phase 3 for Bidder%d\n", X);
+		printf("End of Phase 3 for <Bidder%d>.\n", X);
 	else
-		printf("End of Phase 3 for Seller%d\n", X);
+		printf("End of Phase 3 for <Seller%d>.\n", X);
 }
