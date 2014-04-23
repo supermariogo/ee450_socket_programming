@@ -309,7 +309,7 @@ void * phase2_handle_request(void * argv)
 	tok = strtok(NULL, "# \n");
 	strcpy(seller_name,tok); // get seller name
 	printf("Phase2: Seller%d send item lists\n",name_to_num(2, seller_name));
-	printf("Phase2: (broadcast info)\n%s\n",tok+strlen(tok)+1);
+	printf("Phase2: (sell items)\n%s\n",tok+strlen(tok)+1);
 
 	/*
 	 *for(i=0;i<item_num;i++){
@@ -375,7 +375,7 @@ void phase3_to_bidder(char *file_content)
 			perror("cannot create socket for bidder \n");
 			return;
 		}
-		printf("Phase 3: (Item list displayed here)\n%s",file_content);	
+		printf("Phase 3: (broadcast info)\n%s",file_content);	
 		/* send a message to the bidderi */
 		sprintf(message,"%d#%s",item_num,file_content);
 		if (sendto(s_c,message, strlen(message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
