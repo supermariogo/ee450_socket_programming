@@ -278,3 +278,4 @@ void listen_result(int type, int X, char *user_name)
 	else
 		printf("End of Phase 3 for <Seller%d>.\n", X);
 }
+

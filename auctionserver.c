@@ -308,7 +308,7 @@ void * phase2_handle_request(void * argv)
 	item_num=atoi(tok);  // get items number
 	tok = strtok(NULL, "# \n");
 	strcpy(seller_name,tok); // get seller name
-	printf("Phase2: Seller %s send item lists\n", seller_name);
+	printf("Phase2: Seller%d send item lists\n",name_to_num(2, seller_name));
 	printf("Phase2: (Received Item list display here)\n%s\n",tok+strlen(tok)+1);
 
 	/*
@@ -490,5 +490,20 @@ void phase3_announce(int PORT)
 	close(s_c);
 	return;
 
+}
+
+int name_to_num(int type, char *name)
+{	
+	int j=0;
+	int i=0;
+	for(i=0; i<user_number; i++){
+		if(user[i].type[0]-48==type)
+			j++;
+		if(strcmp(name, user[i].name)==0)
+			return j;
+		if(j>2)
+			return 0;
+	}
+	return 0;
 }
 	

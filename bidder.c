@@ -156,7 +156,7 @@ void compare_and_bid(char * message)
 			   strcmp(item_array[j].seller_name,item_bid_array[i].seller_name)==0)
 			{
 				item_array[j].bidder_price[0]=item_bid_array[i].price;
-				fprintf(stdout,"bidder%d: match!, item_name=%s, our price=%d\n",BIDDERX, item_array[j].item_name,item_array[j].bidder_price[0]);
+				//fprintf(stdout,"bidder%d: match!, item_name=%s, our price=%d\n",BIDDERX, item_array[j].item_name,item_array[j].bidder_price[0]);
 				break;
 			}
 		}
