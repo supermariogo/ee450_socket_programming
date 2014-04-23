@@ -1,4 +1,4 @@
-S_Matt
-S_Matt_Dress1 50
-S_Matt_Dress2 80
-S_Matt_Watch 123
+Taylor
+Skirt1 50
+Shirt1 100
+Watch1 120

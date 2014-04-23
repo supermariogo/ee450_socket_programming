@@ -1,3 +1,5 @@
-S_John
-S_John_Watch1 50
-S_John_Watch2 100
+Julia
+Skirt1 80
+Shirt2 100
+Watch1 100
+Watch2 150

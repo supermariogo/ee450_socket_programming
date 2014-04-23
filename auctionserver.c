@@ -396,7 +396,8 @@ void phase3_to_bidder(char *file_content)
 		//  buff=name#20#30#40
 		tok = strtok(buff, "#\n ");
 		strcpy(bidder_name, tok);
-		printf("Phase 3: Auction Server received a bidding from Bidder%d\n%s\n", name_to_num(1,bidder_name),buff);
+		printf("Phase 3: Auction Server received a bidding from Bidder%d\n", name_to_num(1,bidder_name));
+		printf("Phase 3: %s\n",tok+strlen(tok)+1);
 		for(j=0;j<item_num;j++){
 			tok = strtok(NULL, "#\n ");
 			item_array[j].bidder_price[i]=atoi(tok);  // get bidder price
