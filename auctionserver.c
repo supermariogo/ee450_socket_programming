@@ -39,7 +39,8 @@ int main(int argc, char * argv[])
 	item_array=phase3_file_to_list(file_content,item_num);
 	//send broadcastList and get reply and store bidder's info	
 	phase3_to_bidder(file_content2); 
-	//higher price bidder to item.buyer_name item.buyer_price	
+	//higher price bidder to item.buyer_name item.buyer_price
+	printf("Phase 3: Annouce results: (0 means failed)\n");
 	phase3_calculate();
 
 	sleep(2);// to give time for them create socket and listen
@@ -420,20 +421,18 @@ void phase3_calculate(void)
 			strcpy(item_array[i].buyer_name,item_array[i].bidder_name[j]);
 			//fprintf(stdout, "item#%d selled to bidder_name=%s, at price %d\n", i,item_array[i].buyer_name,item_array[i].buyer_price);
 		}
-		printf("Phase 3: Item %s was sold at price %d (0 means failed)\n", item_array[i].item_name,item_array[i].buyer_price);
+		printf("Phase 3: Item %s was sold at price %d\n", item_array[i].item_name,item_array[i].buyer_price);
 		
 	
 	}
 }
 
 int get_buyer(item_t item){
-	if (item.bidder_price[0]==item.bidder_price[1])
-		return -1;
-	else if(item.price>max(item.bidder_price[0],item.bidder_price[1]))
+	if(item.price>max(item.bidder_price[0],item.bidder_price[1]))
 		return -1;
 	else {
-		if (item.bidder_price[0]>item.bidder_price[1])	
-			return 0;
+		if (item.bidder_price[0]>=item.bidder_price[1])	
+			return 0; // if bidder's price are same, give it to bidder0
 		else 
 			return 1;
 	}
