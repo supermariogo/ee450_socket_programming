@@ -365,6 +365,7 @@ void phase3_to_bidder(char *file_content)
 	char message[4096];
 
 	for(i=0;i<2;i++){
+		printf("Phase 3: Auction Server IP Address: %s Auction UDP Port Number:%d\n",NUNKI, BIDDER1_PHASE3_PORT+i*100);
 		memset((char*)&servaddr, 0, sizeof(servaddr));
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_port = htons(BIDDER1_PHASE3_PORT+i*100);
@@ -374,7 +375,7 @@ void phase3_to_bidder(char *file_content)
 			perror("cannot create socket for bidder \n");
 			return;
 		}
-	
+		printf("Phase 3: (Item list displayed here)\n%s",file_content);	
 		/* send a message to the bidderi */
 		sprintf(message,"%d#%s",item_num,file_content);
 		if (sendto(s_c,message, strlen(message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
