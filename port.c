@@ -33,10 +33,11 @@ void phase1_processing(int type, int X, user_data_t * self_info)
     	perror("client error : send");
 
 	n = recv(s_c, buff, BUFFLEN, 0);
-	if (n > 0) 
-		fprintf(stdout, "client : message from server %s\n",buff);
+	if (n > 0) {
+		//fprintf(stdout, "client : message from server %s\n",buff);
+	}
 	else {
-		fprintf(stderr, "client : server disconnected, socket close thread exit\n");
+		//fprintf(stderr, "client : server disconnected, socket close thread exit\n");
 		close(s_c);
 		exit(0);
 	}
@@ -59,12 +60,13 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 		perror("client error : send");
 
 	memset(buff, 0, BUFFLEN);
-	fprintf(stdout, "I am waiting for Ready signal to continue\n");
+	//fprintf(stdout, "I am waiting for Ready signal to continue\n");
 	n = recv(s_c, buff, BUFFLEN, 0);
-	if (n > 0) 
-		fprintf(stdout, "Get ready signal:%s\n",buff);
+	if (n > 0){ 
+		//fprintf(stdout, "Get ready signal:%s\n",buff);
+	}
 	else {
-		fprintf(stderr, "server close connection! No ready signal!\n");
+		//fprintf(stderr, "server close connection! No ready signal!\n");
 		close(s_c);
 		exit(-1);
 	}
@@ -106,7 +108,7 @@ void file_read_self_info(int type, int X, user_data_t * self_info)
 	}
 	if (fgets(current_line, 1024, fp)!=NULL ){
 
-		fprintf(stdout, "string before strtok(): %s\n", current_line);
+		//fprintf(stdout, "string before strtok(): %s\n", current_line);
 		tok = strtok(current_line," ");
 		strcpy(self_info->type,tok);	
 		tok = strtok(NULL," ");	
@@ -127,7 +129,7 @@ void file_read_self_info(int type, int X, user_data_t * self_info)
 	fclose(fp);
 
 	sprintf (self_info->command, "Login#%s %s %s %s\n", self_info->type, self_info->name, self_info->password, self_info->account);
-	fprintf(stdout, "command: %s\n",self_info->command);
+	//fprintf(stdout, "command: %s\n",self_info->command);
 
 }
 
@@ -216,7 +218,7 @@ int socket_bind_listen(uint16_t PORT){
 		perror("server error : listen");
 		exit(1);
 	}
-	fprintf(stdout, "AS server, I begin to listen\n");
+	//fprintf(stdout, "AS server, I begin to listen\n");
 	if(PORT==SERVER_PHASE1_PORT)
 		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
 	else if(PORT==SERVER_PHASE2_PORT)
@@ -248,17 +250,19 @@ void listen_result(int type, int X, char *user_name)
 		else
 			PORT= SELLER2_FINAL_PORT;	
 	}
-	fprintf(stdout, "listen port %d\n",PORT);
+	//fprintf(stdout, "listen port %d\n",PORT);
 	s_s=socket_bind_listen(PORT);
 	s_c = accept(s_s, (struct sockaddr *)&from, &len); 	
 	
 	sprintf(buff,"%s#",user_name);
 	if (send(s_c, buff,strlen(buff),0)==-1)
 		perror("failed to send my name");
-	else
-		fprintf(stdout, "send my name: %s, and begin to recv my info\n",buff);
+	else{
+		//fprintf(stdout, "send my name: %s, and begin to recv my info\n",buff);
+	}
 	
 	memset(buff,0,8192);
+	printf("Phase 3:\n");
 	n = recv(s_c, buff, 8192, 0);
 	if (n > 0) 
 		printf("%s\n",buff);
@@ -266,7 +270,7 @@ void listen_result(int type, int X, char *user_name)
 		printf("NO INFORMATION FOR ME, I AM FAILED BIDDER\n");
 	}
 	else {
-		fprintf(stderr, "can't receive infomation of me \n");
+		//fprintf(stderr, "can't receive infomation of me \n");
 		close(s_c);
 		exit(0);
 	}

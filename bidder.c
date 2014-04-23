@@ -111,13 +111,13 @@ void phase3_bid(void)
 	}
 		
 	/* 1. now loop, receiving data and printing what we received */
-	fprintf(stdout, "bidder%d: waitting for recvfrom()(after bind)...........................\n",BIDDERX);
+	//fprintf(stdout, "bidder%d: waitting for recvfrom()(after bind)...........................\n",BIDDERX);
 	int recvlen = recvfrom(fd, buff, BUFFLEN, 0, (struct sockaddr *)&remaddr, &addrlen);
 	if(recvlen<=0){
 		fprintf(stderr,"recvfrom error\n");
 		exit(-1);
 	}else
-		printf("Phase 3: (Item list displayed here)\n%s\n",buff);
+		printf("Phase 3: (The broadcast info:)\n%s\n",buff);
 		//printf("bidder%d: received:\n%s\n",BIDDERX,buff);	
 	
 	// 2. stroke the message and store it to broadcast list(item_array)
@@ -139,7 +139,7 @@ void phase3_bid(void)
 			perror("sendto error : connect");
 			exit(-1);
 		}
-		fprintf(stdout,"bidder%d: send complete, wating for annoucement\n---------------------------------\n", BIDDERX);
+		//fprintf(stdout,"bidder%d: send complete, wating for annoucement\n---------------------------------\n", BIDDERX);
 	}
 }
 
@@ -163,7 +163,7 @@ void compare_and_bid(char * message)
 		sprintf(message,"%s%d#",message,item_array[j].bidder_price[0]);
 			//bidder_price[0] is only used for store and output, not ture meaning
 	}
-	printf("Phase 3: bidder%d: (Bidding information displayed here) bidder %s\n",BIDDERX,message); 
+	printf("Phase 3: bidder%d: (my name and my price for all items)\n%s\n",BIDDERX,message); 
 
 } 
 

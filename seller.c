@@ -39,7 +39,7 @@ void phase2_processing(int X)
 
 	sprintf(command,"Items#%d#%s",line_number-1,file_content);
 	printf("Phase 2: Auction Server has IP Address: %s PreAuction Port Number: %d\n", NUNKI,SERVER_PHASE2_PORT);
-	printf("Phase 2: Seller%d send item lists.\n Phase 2: %s\n",SELLERX,file_content);
+	printf("Phase 2: Seller%d send item lists.\nPhase 2: %s",SELLERX,file_content);
 
 //create connection
 	int s_c; //socket fd 

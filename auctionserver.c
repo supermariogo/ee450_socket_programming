@@ -81,7 +81,7 @@ void phase1_handle_connect(int phase1_s_s)
 				pthread_join(thread_do[2], NULL);
 				pthread_join(thread_do[3], NULL);
 				printf("End of Phase 1 for Auction Server\n");
-				fprintf(stdout, "--------------------------------------------\n");
+				//fprintf(stdout, "--------------------------------------------\n");
 				return;
 			}
 	} 
@@ -125,7 +125,7 @@ void * phase1_handle_request(void * argv)
 		get_peer_ip_or_port(s_c,user[i].ip,1);
 		get_peer_ip_or_port(s_c,user[i].port,2);
 		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,user[i].name,user[i].password,user[i].account,user[i].ip);
-		fprintf(stdout, "User Port %s ",user[i].port);	
+		//fprintf(stdout, "User Port %s ",user[i].port);	
 		printf("Authorized: accept\n");
 		if (send(s_c, "Accepted#",strlen("Accepted#"),0)==-1){
 			perror("server error : send");
@@ -135,14 +135,14 @@ void * phase1_handle_request(void * argv)
 		char myip[17];
 		if(user[i].type[0]=='2'){
 			get_my_ip_or_port(s_c,myip,1);
-			fprintf(stdout,"My type is %c",user[i].type[0]);
+			//fprintf(stdout,"My type is %c",user[i].type[0]);
 			printf("Phase 1: Auction Server IP Address: %s PreAuction Port Number: %d sent to seller\n",myip,SERVER_PHASE2_PORT);
 		}
 	}
 	
 
 SYNC:
-	fprintf(stdout, "I am waiting for barrier sync\n");
+	//fprintf(stdout, "I am waiting for barrier sync\n");
 	pthread_barrier_wait(&barr);
 	memset(buff, 0, BUFFLEN);	
 	n = recv(s_c, buff, BUFFLEN, 0);// this should Ready?
@@ -151,7 +151,7 @@ SYNC:
 		close(s_c);
 		pthread_exit(NULL);
 	}else{
-		fprintf(stdout, "I recived %s\n",buff);	
+		//fprintf(stdout, "I recived %s\n",buff);	
 	}// this should "Ready?" 
 
 	if (send(s_c, "Ready#",strlen("Ready#"),0)==-1){
@@ -159,9 +159,9 @@ SYNC:
 		close(s_c);
 		exit(-1);
 	}
-	fprintf(stdout, "I have send Ready signal\n");
+	//fprintf(stdout, "I have send Ready signal\n");
 	close(s_c);
-	fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
+	//fprintf(stdout, "phase1 for this user%d complete\n-----------------------------\n",i);
  	return NULL;
 }
 
@@ -309,7 +309,7 @@ void * phase2_handle_request(void * argv)
 	tok = strtok(NULL, "# \n");
 	strcpy(seller_name,tok); // get seller name
 	printf("Phase2: Seller%d send item lists\n",name_to_num(2, seller_name));
-	printf("Phase2: (Received Item list display here)\n%s\n",tok+strlen(tok)+1);
+	printf("Phase2: (broadcast info)\n%s\n",tok+strlen(tok)+1);
 
 	/*
 	 *for(i=0;i<item_num;i++){
@@ -324,7 +324,7 @@ void * phase2_handle_request(void * argv)
 	 */
 	
 	//fprintf(stdout, "list addres %d, get items from seller %s, he/she has %d items\n",(int)List, ((item_t *)(MyListFirst(List)->obj))->seller_name,MyListLength(List));
-	fprintf(stdout, "phase2 for seller %s complete\n-----------------------------\n", seller_name);
+	//fprintf(stdout, "phase2 for seller %s complete\n-----------------------------\n", seller_name);
 	close(s_c);
  	//return (void *)List;
 	return NULL;
@@ -382,12 +382,12 @@ void phase3_to_bidder(char *file_content)
 			perror("sendto failed");
 			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
 		}
-		fprintf(stdout, "SERVER: broadcast %s\nwait recvfrom()(bidderX's price)\n",message);
+		//fprintf(stdout, "SERVER: broadcast %s\nwait recvfrom()(bidderX's price)\n",message);
 		/* get reply from bidderi */
 		memset((char*)buff, 0, BUFFLEN);
 		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
 		if (recvlen > 0) {
-		    printf("Phase 3: Auction Server received a bidding from Bidder\n%s\n--------------------------------\n", buff);
+		    //printf("Phase 3: Auction Server received a bidding from Bidder%d\n%s\n", buff);
 			if(strcmp(buff,"failed bidder#")==0)
 				continue;
 		}else{
@@ -396,6 +396,7 @@ void phase3_to_bidder(char *file_content)
 		//  buff=name#20#30#40
 		tok = strtok(buff, "#\n ");
 		strcpy(bidder_name, tok);
+		printf("Phase 3: Auction Server received a bidding from Bidder%d\n%s\n", name_to_num(1,bidder_name),buff);
 		for(j=0;j<item_num;j++){
 			tok = strtok(NULL, "#\n ");
 			item_array[j].bidder_price[i]=atoi(tok);  // get bidder price
@@ -411,12 +412,12 @@ void phase3_calculate(void)
 	for(i=0;i<item_num;i++){
 		j=get_buyer(item_array[i]);
 		if (j==-1){
-			fprintf(stdout, "item#%d failed to sell\n",i);
+			//fprintf(stdout, "item#%d failed to sell\n",i);
 		}
 		else{
 			item_array[i].buyer_price=item_array[i].bidder_price[j];
 			strcpy(item_array[i].buyer_name,item_array[i].bidder_name[j]);
-			fprintf(stdout, "item#%d selled to bidder_name=%s, at price %d\n", i,item_array[i].buyer_name,item_array[i].buyer_price);
+			//fprintf(stdout, "item#%d selled to bidder_name=%s, at price %d\n", i,item_array[i].buyer_name,item_array[i].buyer_price);
 		}
 		printf("Phase 3: Item %s was sold at price %d (0 means failed)\n", item_array[i].item_name,item_array[i].buyer_price);
 		
@@ -460,10 +461,11 @@ void phase3_announce(int PORT)
     }
 
 	n = recv(s_c, buff, BUFFLEN, 0);
-	if (n > 0) 
-		fprintf(stdout, "get user_name %s\n",buff);
+	if (n > 0) {
+		//fprintf(stdout, "get user_name %s\n",buff);
+	}
 	else {
-		fprintf(stderr, "can't get user_name, \n");
+		//fprintf(stderr, "can't get user_name, \n");
 		close(s_c);
 		exit(0);
 	}
@@ -483,7 +485,7 @@ void phase3_announce(int PORT)
 				sprintf(message,"%sItem %s was sold at price %d\n",message, item_array[i].item_name,item_array[i].buyer_price);
 		}
 	}
-	fprintf(stdout, "send to remote port %d\n%s\n------------------------------------\n",PORT,message);
+	//fprintf(stdout, "send to remote port %d\n%s\n------------------------------------\n",PORT,message);
 	if (send(s_c, message,strlen(message),0)==-1)
 		perror("client error : send");
 
