@@ -42,7 +42,7 @@ int main(int argc, char * argv[])
 	//higher price bidder to item.buyer_name item.buyer_price	
 	phase3_calculate();
 
-	sleep(5);
+	sleep(2);// to give time for them create socket and listen
 	phase3_announce(SELLER1_FINAL_PORT);
 	phase3_announce(SELLER2_FINAL_PORT);
 	phase3_announce(BIDDER1_FINAL_PORT);
@@ -72,7 +72,7 @@ void phase1_handle_connect(int phase1_s_s)
 	        if (s_c > 0) 
 	        {
 				pthread_create(&thread_do[phase1_thread_max_number], NULL, phase1_handle_request, (void *) &s_c);
-				fprintf(stdout, "server : thread %d created\n",(int)thread_do);
+				//fprintf(stdout, "server : thread %d created\n",(int)thread_do);
 				phase1_thread_max_number++;
 	        }
 			if(phase1_thread_max_number==4){
@@ -97,8 +97,9 @@ void * phase1_handle_request(void * argv)
 	
 	memset(buff, 0, BUFFLEN);	
 	n = recv(s_c, buff, BUFFLEN, 0);
-	if (n > 0) 
- 		fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+	if (n > 0){ 
+ 		//fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+	}
 	else {
 		fprintf(stderr, "client disconnected, socket close thread exit\n");
 		close(s_c);
@@ -111,7 +112,7 @@ void * phase1_handle_request(void * argv)
 		get_peer_ip_or_port(s_c,un_auth_user.ip,1);
 		get_peer_ip_or_port(s_c,un_auth_user.port,2);
 		printf("Phase 1: Authentication request. User%d: Username %s Password: %s Bank Account: %s User IP Addr: %s. ",i,un_auth_user.name,un_auth_user.password,un_auth_user.account,un_auth_user.ip);
-		fprintf(stdout, "User Port %s ",un_auth_user.port);
+		//fprintf(stdout, "User Port %s ",un_auth_user.port);
 		printf("Authorized: reject\n");
 		if (send(s_c, "Rejected#",strlen("Rejected#"),0)==-1){
 			perror("server error : send");
@@ -168,7 +169,7 @@ int phase1_login_check(char *buff, user_data_t * un_auth_user){
 	user_data_t temp_user;
 	char * tok;
 	int i;
-	fprintf(stdout, "string before strtok(): %s\n", buff);
+	//fprintf(stdout, "string before strtok(): %s\n", buff);
 	tok = strtok(buff," #");
 	if(strcmp(tok,"Login")!=0){
 		fprintf(stderr, "invalid login command\n");
@@ -192,7 +193,7 @@ int phase1_login_check(char *buff, user_data_t * un_auth_user){
 		if(strcmp(temp_user.account,user[i].account))
 			continue;
 		strcpy(user[i].type,temp_user.type);
-		fprintf(stdout, "login success type=%s\n",user[i].type);
+		//fprintf(stdout, "login success type=%s\n",user[i].type);
 		return i;
 	}
 
@@ -209,7 +210,7 @@ void file_read_reg(void)
 	char current_line[1024];
 	char *tok = NULL;
 	int i=0;
-	fprintf(stdout,"----------Loading Registration file-------------------\n");
+	//fprintf(stdout,"----------Loading Registration file-------------------\n");
 	while (fgets(current_line, 1024, fp)!=NULL ){
 		if(strlen(current_line)<2) //<2 invalid
 			continue;
@@ -229,7 +230,7 @@ void file_read_reg(void)
 		i++;
 	}
 	user_number=i;// count from zero
-	fprintf(stdout,"----------%d users in Registration file---------------\n\n",user_number);
+	//fprintf(stdout,"----------%d users in Registration file---------------\n\n",user_number);
 	fclose(fp);
 
 }
@@ -257,7 +258,7 @@ void phase2_handle_connect(int phase2_s_s)
 		if (s_c > 0) 
 		{
 			pthread_create(&thread_do[phase2_thread_number], NULL, phase2_handle_request, (void *) &s_c);
-			fprintf(stdout, "server : thread %d created\n",(int)thread_do);
+			//fprintf(stdout, "server : thread %d created\n",(int)thread_do);
 			phase2_thread_number++;
 		}
 		if(phase2_thread_number==phase2_thread_max_number){
@@ -266,7 +267,7 @@ void phase2_handle_connect(int phase2_s_s)
 				item_list[i]=(MyList *)status[i];
 			}
 			printf("End of Phase 2 for Auction Server\n");
-			fprintf(stdout, "--------------------------------------------\n");
+			//fprintf(stdout, "--------------------------------------------\n");
 			return;
 		}
 	} 
@@ -278,17 +279,20 @@ void * phase2_handle_request(void * argv)
  	char buff[BUFFLEN]; 
  	int n = 0;
 	char * tok;
-	int i;
-	int item_num=0;
+	//int i;
+	//int item_num=0;
 	char seller_name[32];
-	item_t* item=NULL;
-	MyList* List=(MyList*)malloc(sizeof(MyList));
-	MyListInit(List);
+	//item_t* item=NULL;
+	/*
+	 *MyList* List=(MyList*)malloc(sizeof(MyList));
+	 *MyListInit(List);
+	 */
 	// begin to receive itemlists	
 	memset(buff, 0, BUFFLEN);
 	n = recv(s_c, buff, BUFFLEN, 0);
-	if (n > 0) 
- 		fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+	if (n > 0){ 
+ 		//fprintf(stdout, "server : message from thread %d, %s \n",(int)pthread_self(),buff);
+	}
 	else {
 		fprintf(stderr, "client disconnected, socket close thread exit\n");
 		close(s_c);
@@ -307,20 +311,23 @@ void * phase2_handle_request(void * argv)
 	printf("Phase2: Seller %s send item lists\n", seller_name);
 	printf("Phase2: (Received Item list display here)\n%s\n",tok+strlen(tok)+1);
 
-	for(i=0;i<item_num;i++){
-		item=(item_t*)malloc(sizeof(item_t));
-		tok = strtok(NULL, "# \n");
-		strcpy(item->item_name,tok); // get item name
-		tok = strtok(NULL, "# \n");
-		item->price=atoi(tok);  // get item price
-		strcpy(item->seller_name,seller_name); //get seller name
-		MyListAppend(List, (void*)item);
-	}
+	/*
+	 *for(i=0;i<item_num;i++){
+	 *    item=(item_t*)malloc(sizeof(item_t));
+	 *    tok = strtok(NULL, "# \n");
+	 *    strcpy(item->item_name,tok); // get item name
+	 *    tok = strtok(NULL, "# \n");
+	 *    item->price=atoi(tok);  // get item price
+	 *    strcpy(item->seller_name,seller_name); //get seller name
+	 *    MyListAppend(List, (void*)item);
+	 *}
+	 */
 	
-	fprintf(stdout, "list addres %d, get items from seller %s, he/she has %d items\n",(int)List, ((item_t *)(MyListFirst(List)->obj))->seller_name,MyListLength(List));
+	//fprintf(stdout, "list addres %d, get items from seller %s, he/she has %d items\n",(int)List, ((item_t *)(MyListFirst(List)->obj))->seller_name,MyListLength(List));
 	fprintf(stdout, "phase2 for seller %s complete\n-----------------------------\n", seller_name);
 	close(s_c);
- 	return (void *)List;  
+ 	//return (void *)List;
+	return NULL;
 }
 
 
@@ -379,7 +386,7 @@ void phase3_to_bidder(char *file_content)
 		memset((char*)buff, 0, BUFFLEN);
 		recvlen = recvfrom(s_c, buff, BUFFLEN, 0, (struct sockaddr *)&servaddr, &addrlen);
 		if (recvlen > 0) {
-		    fprintf(stdout,"SERVER: received:\n%s\n--------------------------------\n", buff);
+		    printf("Phase 3: Auction Server received a bidding from Bidder\n%s\n--------------------------------\n", buff);
 			if(strcmp(buff,"failed bidder#")==0)
 				break;
 		}else{
@@ -403,15 +410,15 @@ void phase3_calculate(void)
 	for(i=0;i<item_num;i++){
 		j=get_buyer(item_array[i]);
 		if (j==-1){
-			fprintf(stdout, "item_array[%d] failed to sell\n",i);
-			continue;
+			fprintf(stdout, "item#%d failed to sell\n",i);
 		}
 		else{
 			item_array[i].buyer_price=item_array[i].bidder_price[j];
 			strcpy(item_array[i].buyer_name,item_array[i].bidder_name[j]);
-			fprintf(stdout, "item_array[%d] item_name=%s, sell to bidder_name=%s, at price %d\n", i,item_array[i].item_name,item_array[i].buyer_name,item_array[i].buyer_price);
-			printf("item %s was sold at price %d (0 means failed)\n", item_array[i].item_name,item_array[i].buyer_price);
+			fprintf(stdout, "item#%d selled to bidder_name=%s, at price %d\n", i,item_array[i].buyer_name,item_array[i].buyer_price);
 		}
+		printf("Phase 3: Item %s was sold at price %d (0 means failed)\n", item_array[i].item_name,item_array[i].buyer_price);
+		
 	
 	}
 }
@@ -446,16 +453,16 @@ void phase3_announce(int PORT)
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
     if (connect(s_c, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
-        close(s_c);
         perror("client error : connect");
+		close(s_c);
 		exit(-1);
     }
 
 	n = recv(s_c, buff, BUFFLEN, 0);
 	if (n > 0) 
-		fprintf(stdout, "client : message from server %s\n",buff);
+		fprintf(stdout, "get user_name %s\n",buff);
 	else {
-		fprintf(stderr, "client : server disconnected, \n");
+		fprintf(stderr, "can't get user_name, \n");
 		close(s_c);
 		exit(0);
 	}
@@ -475,7 +482,7 @@ void phase3_announce(int PORT)
 				sprintf(message,"%sItem %s was sold at price %d\n",message, item_array[i].item_name,item_array[i].buyer_price);
 		}
 	}
-	fprintf(stdout, "send to port %d\n%s\n------------------------------------\n",PORT,message);
+	fprintf(stdout, "send to remote port %d\n%s\n------------------------------------\n",PORT,message);
 	if (send(s_c, message,strlen(message),0)==-1)
 		perror("client error : send");
 

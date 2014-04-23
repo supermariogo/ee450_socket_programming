@@ -56,7 +56,6 @@ void phase2_processing(int X)
 		exit(-1);
     }
 
-
 	if (send(s_c, command,strlen(command),0)==-1)
     	perror("client error : send");
 

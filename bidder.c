@@ -159,7 +159,7 @@ void compare_and_bid(char * message)
 		sprintf(message,"%s%d#",message,item_array[j].bidder_price[0]);
 			//bidder_price[0] is only used for store and output, not ture meaning
 	}
-	fprintf(stdout, "bidder%d: send: %s\n",BIDDERX,message); 
+	printf("Phase 3: bidder%d: (Bidding information displayed here) bidder %s\n",BIDDERX,message); 
 
 } 
 

@@ -144,11 +144,11 @@ int get_my_ip_or_port(int s_fd, char *dest, int type)
     getsockname(s_fd, (struct sockaddr *)&my_addr_info, &len);
 	if(type==1){
 		inet_ntop(AF_INET, &my_addr_info.sin_addr, dest, 17);
-    	fprintf(stdout, "my ip: %s\n", dest);
+    	//fprintf(stdout, "my ip: %s\n", dest);
 	}
 	else if(type==2){
 		sprintf(dest, "%u", ntohs(my_addr_info.sin_port));
-		fprintf(stdout, "my port: %s\n", dest);  // it doesn't matter use ntoh or hton, the result is same!!!
+		//fprintf(stdout, "my port: %s\n", dest);  // it doesn't matter use ntoh or hton, the result is same!!!
 	}
 	else{
 		fprintf(stderr, "wrong type for peer ip or port\n");
@@ -165,7 +165,7 @@ item_t * phase3_file_to_list(char * file_content, int num)
 	item_t * array=(item_t*)malloc(num*sizeof(item_t));
 	memset((void *)array, 0, num*sizeof(item_t));
 
-	fprintf(stdout, "the file going to strtok is:\n%s\n",file_content);
+	//fprintf(stdout, "the file going to strtok is:\n%s\n",file_content);
 
 	for(i=0;i<num;i++){
 		
@@ -204,11 +204,12 @@ int socket_bind_listen(uint16_t PORT){
 		perror("server error : listen");
 		exit(1);
 	}
-	fprintf(stdout, "server : begin to listen\n");
+	fprintf(stdout, "AS server, I begin to listen\n");
 	if(PORT==SERVER_PHASE1_PORT)
 		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
 	else if(PORT==SERVER_PHASE2_PORT)
-		printf("Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
+		printf("Phase 2: Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
+	
 	return s_s;
 
 }
@@ -241,14 +242,16 @@ void listen_result(int type, int X, char *user_name)
 	
 	sprintf(buff,"%s#",user_name);
 	if (send(s_c, buff,strlen(buff),0)==-1)
-		perror("client error : send");
+		perror("failed to send my name");
+	else
+		fprintf(stdout, "send my name: %s, and begin to recv my info\n",buff);
 	
 	memset(buff,0,8192);
 	n = recv(s_c, buff, 8192, 0);
 	if (n > 0) 
 		printf("%s\n",buff);
 	else {
-		fprintf(stderr, "client : server disconnected \n");
+		fprintf(stderr, "can't receive infomation of me \n");
 		close(s_c);
 		exit(0);
 	}
