@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
 	phase3_bid();
 
 	if(self_info.authentication_success!=1){
-		printf("I am not a authorised user. END\n");
-		return 0;
+		printf("I am not a authorised user.\n");
 	}
 	listen_result(1, BIDDERX, self_info.name);
 	return 0;

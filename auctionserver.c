@@ -15,7 +15,7 @@ pthread_barrier_t barr;
 int main(int argc, char * argv[]) 
 { 
 
-	memset(&user, 0, sizeof(user[10]));
+	memset(&user, 0, sizeof(user));
 	file_read_reg();
 
 	int phase1_s_s;
