@@ -10,6 +10,7 @@ MyList * item_list[2];
 item_t *item_array;
 int item_num=0;
 
+
 pthread_barrier_t barr;
 
 int main(int argc, char * argv[]) 
@@ -364,9 +365,10 @@ void phase3_to_bidder(char *file_content)
 	int i,j;
 	addrlen=sizeof(servaddr);
 	char message[4096];
-
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);	
 	for(i=0;i<2;i++){
-		printf("Phase 3: Auction Server IP Address: %s Auction UDP Port Number:%d\n",NUNKI, BIDDER1_PHASE3_PORT+i*100);
+		printf("Phase 3: Auction Server IP Address: %s Auction UDP Port Number:%d\n",SERVER_IP, BIDDER1_PHASE3_PORT+i*100);
 		memset((char*)&servaddr, 0, sizeof(servaddr));
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_port = htons(BIDDER1_PHASE3_PORT+i*100);

@@ -90,14 +90,18 @@ void phase3_bid(void)
 	/* bind the socket to SERVERHOST */
 	memset((char *)&myaddr, 0, sizeof(myaddr));
 	myaddr.sin_family = AF_INET;
-	inet_pton(AF_INET, SERVERHOST, &myaddr.sin_addr);
+	
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);
+
+	inet_pton(AF_INET, SERVER_IP, &myaddr.sin_addr);
 	if(BIDDERX==1){
 		myaddr.sin_port = htons(BIDDER1_PHASE3_PORT);
-		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER1_PHASE3_PORT,SERVERHOST);
+		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER1_PHASE3_PORT,SERVER_IP);
 	}
 	else if(BIDDERX==2){
 		myaddr.sin_port = htons(BIDDER2_PHASE3_PORT);
-		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER2_PHASE3_PORT,SERVERHOST);
+		printf("Phase 3: <Bidder%d> has UDP port %d and IP address: %s\n", BIDDERX,BIDDER2_PHASE3_PORT,SERVER_IP);
 	}
 	else{
 		fprintf(stderr, "bidder what?!\n");

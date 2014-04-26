@@ -36,9 +36,10 @@ void phase2_processing(int X)
 	rewind(fp);
 	fread(file_content,sizeof(char),file_size,fp);
 	fclose(fp);
-
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);
 	sprintf(command,"Items#%d#%s",line_number-1,file_content);
-	printf("Phase 2: Auction Server has IP Address: %s PreAuction Port Number: %d\n", NUNKI,SERVER_PHASE2_PORT);
+	printf("Phase 2: Auction Server has IP Address: %s PreAuction Port Number: %d\n", SERVER_IP,SERVER_PHASE2_PORT);
 	printf("Phase 2: Seller%d send item lists.\nPhase 2: %s",SELLERX,file_content);
 
 //create connection

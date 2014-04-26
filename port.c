@@ -8,6 +8,7 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	char buff[BUFFLEN]="";
 	int n;
 	char *tok = NULL;
+	char SERVER_IP[100];
 
 	memset(&phase1_addr_info, 0, sizeof(phase1_addr_info)); 
     phase1_addr_info.sin_family = AF_INET;
@@ -49,8 +50,9 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	}
 	else{
 		printf("Phase 1: Login request reply: Accepted\n");
+		get_peer_ip_or_port(s_c,SERVER_IP,1);
 		if(type==2)//only for seller
-			printf("Phase 1: Auction Server has IP Address: %s and PreAuction TCP Port Number: %d \n", NUNKI,SERVER_PHASE2_PORT);
+			printf("Phase 1: Auction Server has IP Address: %s and PreAuction TCP Port Number: %d \n", SERVER_IP,SERVER_PHASE2_PORT);
 		
 		self_info->authentication_success=1;
 	}
@@ -219,10 +221,14 @@ int socket_bind_listen(uint16_t PORT){
 		exit(1);
 	}
 	//fprintf(stdout, "AS server, I begin to listen\n");
+	//
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);	
 	if(PORT==SERVER_PHASE1_PORT)
-		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, NUNKI);
+		printf("Phase 1: Auction server has TCP port number %d and IP address %s\n", SERVER_PHASE1_PORT, SERVER_IP);
+
 	else if(PORT==SERVER_PHASE2_PORT)
-		printf("Phase 2: Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", NUNKI, SERVER_PHASE2_PORT);
+		printf("Phase 2: Auction Server IP Address: %s PreAuction TCP Port Number: %d\n", SERVER_IP, SERVER_PHASE2_PORT);
 	
 	return s_s;
 
@@ -283,3 +289,13 @@ void listen_result(int type, int X, char *user_name)
 		printf("End of Phase 3 for <Seller%d>.\n", X);
 }
 
+void get_host_ip(char *hostname, char*ip)
+{
+	struct hostent *h;
+	if ((h=gethostbyname(hostname))==NULL){
+		herror("gethostbyname");
+		exit(-1);
+	}
+	strcpy(ip, inet_ntoa(*((struct in_addr *)h->h_addr)));
+	//fprintf(stdout, "get_host_ip: %s",ip);
+}

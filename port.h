@@ -1,7 +1,7 @@
 #ifndef SERVER_PHASE1_PORT
 
-#define LOCALHOST "127.0.0.1"
-#define NUNKI "68.181.201.3" 
+#define LOCALHOST "localhost"
+#define NUNKI "nunki.usc.edu" 
 #define SERVER_PHASE1_PORT 2039
 
 #define SERVER_PHASE2_PORT 2139
@@ -68,4 +68,5 @@ extern int get_my_ip_or_port(int server_fd, char *dest, int type);
 extern item_t * phase3_file_to_list(char * file_content, int num);
 extern int socket_bind_listen(uint16_t PORT);
 extern void listen_result(int type, int X, char *user_name);
+extern void get_host_ip(char *hostname, char*ip);
 
