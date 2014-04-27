@@ -33,9 +33,6 @@ int main(int argc, char *argv[])
 	 */
 	phase3_bid();
 
-	if(self_info.authentication_success!=1){
-		printf("I am not a authorised user.\n");
-	}
 	listen_result(1, BIDDERX, self_info.name);
 	return 0;
 }
@@ -141,7 +138,7 @@ void phase3_bid(void)
 	// 4. send message
 	if(self_info.authentication_success!=1){
 		sendto(fd, "failed bidder#", strlen("failed bidder#"), 0, (struct sockaddr *)&remaddr, addrlen);
-		fprintf(stdout, "but I am a failded bidder\n");
+		fprintf(stdout, "Biding message would not be sent because I am a failded bidder.\n");
 	}
 	else{
 		if(sendto(fd, message, strlen(message), 0, (struct sockaddr *)&remaddr, addrlen)<0){

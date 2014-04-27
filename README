@@ -49,12 +49,14 @@ f. The format of all the messages exchanged (other than what is mentioned in the
    others are same with project description 
 
 g. Any idiosyncrasy of your project. It should say under what conditions the project fails, if any.
-   All conditions have been considered. Please have a test.
-   Predefined Macros are used when compile.
-   for examle:
-   bidder1.o bidder2.o are both from bidder.c, 
-   Predefined Macros: gcc -DSELLERX=1, gcc -DSELLERX=1 are used to distinguish different bidders
-   This is more efficient and easy than fork() process.
+   1. All conditions should have been considered. Please have a test.
+   2. Predefined Macros are used when compile.
+      for examle:
+      bidder1.o bidder2.o are both from bidder.c, 
+      but gcc -DSELLERX=1...
+	  gcc -DSELLERX=2....
+	  This is more efficient and easy than fork() process.
+   3. If a item is not selled successfully, its price will be shown as 0. 
 
 h. Reused Code: Did you use code from anywhere for your project? 
    MyList.c is the code I wrote in CS402

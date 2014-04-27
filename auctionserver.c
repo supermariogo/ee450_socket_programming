@@ -386,8 +386,6 @@ void phase3_to_bidder(char *file_content)
 		printf("Phase 3: (broadcast info)\n%s",file_content);	
 		/* send a message to the bidderi */
 		sprintf(message,"%d#%s",item_num,file_content);
-		fprintf(stdout,"file_content is %s\n",file_content);
-		fprintf(stdout, "message is %s\n",message);
 		if (sendto(s_c,message, strlen(message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
 			perror("sendto failed");
 			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
@@ -467,7 +465,7 @@ void phase3_announce(int PORT)
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
     if (connect(s_c, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
-		printf("User who use PORT%d didn't pass the authentication, ignore her/him.\n",PORT);
+		//printf("User who use PORT%d didn't pass the authentication, no info will be provided to her/him.\n",PORT);
 		close(s_c);
 		return;
     }
