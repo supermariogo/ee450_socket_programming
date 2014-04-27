@@ -78,7 +78,7 @@ void phase3_bid(void)
 	struct sockaddr_in remaddr;     /* remote address */
 	socklen_t addrlen = sizeof(remaddr);            /* length of addresses */
 	int fd;                         /* our socket */
-	char buff[4096];       /* receive bufffer */
+	char buff[4096]="";       /* receive bufffer */
 	
 	/* create a UDP socket */
 	
