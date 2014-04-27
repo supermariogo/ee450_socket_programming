@@ -1,10 +1,3 @@
-make
-./server.o
-./bidder1.o
-./bidder2.o
-./seller1.o
-./seller2.o
-----------------------------------------------
 a. Full Name
    Ze Mao
 
@@ -15,17 +8,29 @@ c. What you have done in the assignment
    everything in phase 1 2 3
 
 d.What your code files are and what each one of them does.  
-   auctionserver.c---------what server should do, phase 1: as TCP server receive login info
-												  phase 2: as TCP server receive seller's itemlist
-												  phase 3: broadcast items and annouce result
-   bidder.c----------------what bidder should do, phase 1: send login info to server
-                                                  phase 2: NULL
-												  phase 3: listen broadcast items and bid and receive result
-   seller.c----------------what seller should do, phase 1: send login info to server
-												  phase 2: send items to server
-												  phase 3: receive result
-   port.c------------------some common functions that are used by bidder.c auctionserver.c seller.c
-   MyList.c----------------a functions set of list operation, used to stored them items from seller
+   auctionserver.c
+   what server should do, 
+   phase 1: as TCP server receive login info
+   phase 2: as TCP server receive seller's itemlist
+   phase 3: broadcast items and annouce result
+
+   bidder.c
+   what bidder should do, 
+   phase 1: send login info to server
+   phase 2: NULL
+   phase 3: listen broadcast items and bid and receive result
+
+   seller.c
+   what seller should do, 
+   phase 1: send login info to server
+   phase 2: send items to server
+   phase 3: receive result
+
+   port.c
+   some common functions that are used by bidder.c auctionserver.c seller.c
+   
+   MyList.c
+   a functions set of list operation, used to store items from seller
 
 e. What the TA should do to run your programs.  
    make
