@@ -253,7 +253,12 @@ void phase2_handle_connect(int phase2_s_s)
 		if(user[i].type[0]=='2'&&user[i].authentication_success==1)
 			phase2_thread_max_number++;
 	}
-	
+	if(phase2_thread_max_number==0){
+		printf("NO SELLER!!! QUIT \n");
+		sleep(2);
+		tell_bidder_end();
+		exit(-1);
+	}
 	while (1) 
 	{ 
 		s_c = accept(phase2_s_s, (struct sockaddr *)&from, &len); 
@@ -398,6 +403,7 @@ void phase3_to_bidder(char *file_content)
 		}else{
 			fprintf(stderr, "recvfrom error\n");
 		}
+		close(s_c);
 		//  buff=name#20#30#40
 		tok = strtok(buff, "#\n ");
 		strcpy(bidder_name, tok);
@@ -461,9 +467,9 @@ void phase3_announce(int PORT)
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
     if (connect(s_c, (struct sockaddr *) &addr_info, sizeof(addr_info)) == -1) {
-        perror("client error : connect");
+		printf("User who use PORT%d didn't pass the authentication, ignore her/him.\n",PORT);
 		close(s_c);
-		exit(-1);
+		return;
     }
 
 	n = recv(s_c, buff, BUFFLEN, 0);
@@ -514,4 +520,31 @@ int name_to_num(int type, char *name)
 	}
 	return 0;
 }
+
+void tell_bidder_end(void)
+{
+	int s_c;
+	struct sockaddr_in servaddr;    /* server address */
+	int i;
+	char message[6]="END#";
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);	
+	for(i=0;i<2;i++){
+		memset((char*)&servaddr, 0, sizeof(servaddr));
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(BIDDER1_PHASE3_PORT+i*100);
+		inet_pton(AF_INET, SERVER_IP, &servaddr.sin_addr);
+	
+		if ((s_c = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+			perror("cannot create socket for bidder \n");
+			return;
+		}
+		if (sendto(s_c,message, strlen(message), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
+			perror("sendto failed");
+			printf("The bidder who has port %d has failed in authentication\n", BIDDER1_PHASE3_PORT+i*100);
+		}
+		close(s_c);
+	}
+}
+
 	

@@ -124,6 +124,11 @@ void phase3_bid(void)
 		printf("Phase 3: (The broadcast info:)\n%s\n",buff);
 		//printf("bidder%d: received:\n%s\n",BIDDERX,buff);	
 	
+	if(strcmp(buff,"END#")==0){
+		printf("NO SELLER, END! \n");
+		close(fd);
+		exit(-1);
+	}
 	// 2. stroke the message and store it to broadcast list(item_array)
 	char * tok;
 	tok=strtok(buff,"#\n ");
@@ -145,6 +150,7 @@ void phase3_bid(void)
 		}
 		//fprintf(stdout,"bidder%d: send complete, wating for annoucement\n---------------------------------\n", BIDDERX);
 	}
+	close(fd);
 }
 
 void compare_and_bid(char * message)

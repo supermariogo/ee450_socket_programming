@@ -22,10 +22,16 @@ void phase2_processing(int X)
 	long file_size;
 	int line_number=0;
 	char current_line[1024];
-		if(X==1)
-			fp = fopen ("itemList1.txt","r"); 
-		else
-			fp = fopen ("itemList2.txt","r");
+	
+	if(self_info.authentication_success==0)
+	{
+		printf("Authentication failed, QUIT! \n");
+		exit(-1);
+	}
+	if(X==1)
+		fp = fopen ("itemList1.txt","r"); 
+	else
+		fp = fopen ("itemList2.txt","r");
 
 	while (fgets(current_line, 1024, fp)!=NULL ){
 		if(strlen(current_line)>2) //<2 invalid

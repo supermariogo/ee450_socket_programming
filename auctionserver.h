@@ -13,4 +13,5 @@ extern int get_buyer(item_t item);
 extern void phase3_calculate(void);
 extern void phase3_announce(int PORT);
 extern int name_to_num(int type, char *name);
+extern void tell_bidder_end(void);
 

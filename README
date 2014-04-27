@@ -1,0 +1,75 @@
+make
+./server.o
+./bidder1.o
+./bidder2.o
+./seller1.o
+./seller2.o
+----------------------------------------------
+a. Full Name
+   Ze Mao
+
+b. Student ID 
+   6077548939
+
+c. What you have done in the assignment 
+   everything in phase 1 2 3
+
+d.What your code files are and what each one of them does.  
+   auctionserver.c---------what server should do, phase 1: as TCP server receive login info
+												  phase 2: as TCP server receive seller's itemlist
+												  phase 3: broadcast items and annouce result
+   bidder.c----------------what bidder should do, phase 1: send login info to server
+                                                  phase 2: NULL
+												  phase 3: listen broadcast items and bid and receive result
+   seller.c----------------what seller should do, phase 1: send login info to server
+												  phase 2: send items to server
+												  phase 3: receive result
+   port.c------------------some common functions that are used by bidder.c auctionserver.c seller.c
+   MyList.c----------------a functions set of list operation, used to stored them items from seller
+
+e. What the TA should do to run your programs.  
+   make
+   ./server.o
+   ./bidder1.o
+   ./bidder2.o
+   ./seller1.o
+   ./seller2.o
+
+f. The format of all the messages exchanged (other than what is mentioned in the project description).
+   Ready#  is send from server to sync all processed in phase1 to guarantee all user has send login info
+   name#10#30#40# is send from bidder to state his/her price for every item
+   END# is send from server to users to terminal when no seller pass the authentication
+   others are same with project description 
+
+g. Any idiosyncrasy of your project. It should say under what conditions the project fails, if any.
+   All conditions have been considered. Please have a test.
+
+h. Reused Code: Did you use code from anywhere for your project? 
+   MyList.c is the code I wrote in CS402
+
+----------------------------------------------
+The flow:
+
+Phase1: authentication
+
+server      <--------bidder1
+2039 TCP    <--------bidder2
+            <--------seller1
+            <--------seller2
+
+
+Phase2: seller send items
+
+server      <--------seller1
+2139 TCP    <--------seller2
+
+Phase3: broadcat and annouce
+
+server      -------->bidder1 4039  UDP
+            -------->bidder2 4139  UDP
+
+server      -------->bidder1 5039  TCP
+            -------->bidder2 5139  TCP
+            -------->seller1 3039  TCP
+            -------->seller2 3139  TCP
+
