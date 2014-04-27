@@ -31,6 +31,7 @@ d.What your code files are and what each one of them does.
    
    MyList.c
    a functions set of list operation, used to store items from seller
+
    and
    auctionserver.h bidder.h seller.h port.h MyList.h 
 
@@ -41,10 +42,12 @@ e. What the TA should do to run your programs.
    ./bidder2.o
    ./seller1.o
    ./seller2.o
+   (run them in different sessions)
 
 f. The format of all the messages exchanged (other than what is mentioned in the project description).
+
    Ready#  is send from server to sync all processed in phase1 to guarantee all user has send login info
-   name#10#30#40# is send from bidder to state his/her price for every item
+   Name#10#30#40# is send from bidder to state his/her price for every item
    END# is send from server to users to terminal when no seller pass the authentication
    others are same with project description 
 
@@ -53,9 +56,10 @@ g. Any idiosyncrasy of your project. It should say under what conditions the pro
    2. Predefined Macros are used when compile.
       for examle:
       bidder1.o bidder2.o are both from bidder.c, 
-      but gcc -DSELLERX=1...
-	  gcc -DSELLERX=2....
-	  This is more efficient and easy than fork() process.
+      but 
+	  gcc -DSELLERX=1... -o bidder1.o
+	  gcc -DSELLERX=2... -o bidder2.o
+	  This is more efficient and easier than fork() process.
    3. If a item is not selled successfully, its price will be shown as 0. 
 
 h. Reused Code: Did you use code from anywhere for your project? 
