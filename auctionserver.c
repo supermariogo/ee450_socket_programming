@@ -449,10 +449,12 @@ void phase3_announce(int PORT)
 	char *tok = NULL;
 	char user_name[32];
 	char message[8192];
+	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);
 	memset(message, 0, sizeof(message));
 	memset(&addr_info, 0, sizeof(addr_info)); 
     addr_info.sin_family = AF_INET;
-	inet_pton(AF_INET,SERVERHOST, &addr_info.sin_addr);
+	inet_pton(AF_INET,SERVER_IP, &addr_info.sin_addr);
     addr_info.sin_port = htons(PORT); //from host byte order to network byte order.  
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd

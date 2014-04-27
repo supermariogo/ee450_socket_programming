@@ -9,10 +9,11 @@ void phase1_processing(int type, int X, user_data_t * self_info)
 	int n;
 	char *tok = NULL;
 	char SERVER_IP[100];
+	get_host_ip(SERVERHOST, SERVER_IP);
 
 	memset(&phase1_addr_info, 0, sizeof(phase1_addr_info)); 
     phase1_addr_info.sin_family = AF_INET;
-	inet_pton(AF_INET,SERVERHOST, &phase1_addr_info.sin_addr);
+	inet_pton(AF_INET,SERVER_IP, &phase1_addr_info.sin_addr);
     phase1_addr_info.sin_port = htons(SERVER_PHASE1_PORT); //from host byte order to network byte order.  
 
 	//fprintf(stdout, "Hello, I am type%d(1bidder 2seller) #%d\n",type, X);

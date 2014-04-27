@@ -48,7 +48,7 @@ void phase2_processing(int X)
 
 	memset(&addr_info, 0, sizeof(addr_info)); 
     addr_info.sin_family = AF_INET;
-	inet_pton(AF_INET,SERVERHOST, &addr_info.sin_addr);
+	inet_pton(AF_INET,SERVER_IP, &addr_info.sin_addr);
     addr_info.sin_port = htons(SERVER_PHASE2_PORT); //from host byte order to network byte order.  
 
 	s_c = socket(AF_INET, SOCK_STREAM, 0); //create socket fd
