@@ -31,6 +31,8 @@ d.What your code files are and what each one of them does.
    
    MyList.c
    a functions set of list operation, used to store items from seller
+   and
+   auctionserver.h bidder.h seller.h port.h MyList.h 
 
 e. What the TA should do to run your programs.  
    make
@@ -48,9 +50,29 @@ f. The format of all the messages exchanged (other than what is mentioned in the
 
 g. Any idiosyncrasy of your project. It should say under what conditions the project fails, if any.
    All conditions have been considered. Please have a test.
+   Predefined Macros are used in when compile.
+   for examle:
+   bidder1.o bidder2.o are both from bidder.c, 
+   Predefined Macros: gcc -DSELLERX=1, gcc -DSELLERX=1 are used to distinguish different bidders
+   This is more efficient and easy than fork() process.
 
 h. Reused Code: Did you use code from anywhere for your project? 
    MyList.c is the code I wrote in CS402
+
+----------------------------------------------
+bonus points:
+
+16. If you submit a makefile or a script file along with your project that helps us compile your codes more 
+easily, you will receive 5 bonus points.
+
+Makefile are used.
+
+15. Using fork() or similar system calls are not mandatory however if you do use fork() or similar system files 
+in your codes to create concurrent processes (or threads) and they function correctly you will receive 10 
+bonus points.
+
+concurrent threads (pthread) are used, you can have a check with the following command,
+grep -n 'pthread' *.c
 
 ----------------------------------------------
 The flow:
