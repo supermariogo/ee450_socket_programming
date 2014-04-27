@@ -372,7 +372,7 @@ void phase3_to_bidder(char *file_content)
 		memset((char*)&servaddr, 0, sizeof(servaddr));
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_port = htons(BIDDER1_PHASE3_PORT+i*100);
-		inet_pton(AF_INET, SERVERHOST, &servaddr.sin_addr);
+		inet_pton(AF_INET, SERVER_IP, &servaddr.sin_addr);
 	
 		if ((s_c = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 			perror("cannot create socket for bidder \n");
