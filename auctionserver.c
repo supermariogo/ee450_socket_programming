@@ -31,8 +31,8 @@ int main(int argc, char * argv[])
 	
 	//phase 3
 	sleep(2);
-	char file_content[4096];
-	char file_content2[4096];
+	char file_content[4096]="";
+	char file_content2[4096]="";
 	//read boradcast.txt to file_content
 	phase3_read_broadcast_file(file_content); 
 	strcpy(file_content2, file_content);//back up to file_content2
